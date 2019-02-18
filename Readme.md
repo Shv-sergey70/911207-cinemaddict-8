@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ксения Филиппова](https://up.htmlacademy.ru/ecmascript/8/user/911207).
-* Наставник: `Неизвестно`.
+* Наставник: `Даниил Оношко`.
 
 ---
 
