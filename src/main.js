@@ -1,5 +1,5 @@
 import createFilter from './create-filter.js';
-import createFilmCard from './create-film-card.js';
+import createFilmCards from './create-film-card.js';
 
 const getRandomIntegerInRange = (min, max) => {
   return Math.floor((Math.random() * (max + 1 - min)) + min);
@@ -41,9 +41,7 @@ const clearHtmlBlock = (domElement) => {
 };
 const renderMainFilmCards = (cardsForRenderCount) => {
   clearHtmlBlock(filmsListContainerBlock);
-  for (let i = 0; i < cardsForRenderCount; i++) {
-    filmsListContainerBlock.insertAdjacentHTML(`beforeend`, createFilmCard(true));
-  }
+  filmsListContainerBlock.insertAdjacentHTML(`beforeend`, createFilmCards(cardsForRenderCount, true).join(``));
 };
 const onFilterClick = () => {
   renderMainFilmCards(getRandomIntegerInRange(1, 7));
@@ -68,7 +66,5 @@ filmsListsExtraBlocks.forEach((filmListExtraBlock) => {
   const filmListContainer = filmListExtraBlock.querySelector(`.films-list__container`);
   clearHtmlBlock(filmListContainer);
 
-  for (let i = 0; i < filmsCardsCount.EXTRA; i++) {
-    filmListContainer.insertAdjacentHTML(`beforeend`, createFilmCard());
-  }
+  filmListContainer.insertAdjacentHTML(`beforeend`, createFilmCards(filmsCardsCount.EXTRA).join(``));
 });
