@@ -1,5 +1,7 @@
 import createFilter from './create-filter.js';
-import createFilmCards from './create-film-card.js';
+import FilmCard from './film-card.js';
+import getFilmCardData from './film-card-data.js';
+import FilmCardPopup from './film-card-popup.js';
 
 const getRandomIntegerInRange = (min, max) => {
   return Math.floor((Math.random() * (max + 1 - min)) + min);
@@ -41,7 +43,21 @@ const clearHtmlBlock = (domElement) => {
 };
 const renderMainFilmCards = (cardsForRenderCount) => {
   clearHtmlBlock(filmsListContainerBlock);
-  filmsListContainerBlock.insertAdjacentHTML(`beforeend`, createFilmCards(cardsForRenderCount, true).join(``));
+  for (let i = 0; i < cardsForRenderCount; i++) {
+    const cardData = getFilmCardData();
+    const Card = new FilmCard(cardData, true);
+    const Popup = new FilmCardPopup(cardData);
+    Popup.setOnCloseButtonClickFunc = () => {
+      Popup.remove();
+      document.querySelector(`.film-details`).remove();
+    };
+    Card.commentsButtonClickFunc = () => {
+      const body = document.querySelector(`body`);
+
+      body.appendChild(Popup.render());
+    };
+    filmsListContainerBlock.appendChild(Card.render());
+  }
 };
 const onFilterClick = () => {
   renderMainFilmCards(getRandomIntegerInRange(1, 7));
@@ -66,5 +82,19 @@ filmsListsExtraBlocks.forEach((filmListExtraBlock) => {
   const filmListContainer = filmListExtraBlock.querySelector(`.films-list__container`);
   clearHtmlBlock(filmListContainer);
 
-  filmListContainer.insertAdjacentHTML(`beforeend`, createFilmCards(filmsCardsCount.EXTRA).join(``));
+  for (let i = 0; i < filmsCardsCount.EXTRA; i++) {
+    const cardData = getFilmCardData();
+    const Card = new FilmCard(cardData);
+    const Popup = new FilmCardPopup(cardData);
+    Popup.setOnCloseButtonClickFunc = () => {
+      Popup.remove();
+      document.querySelector(`.film-details`).remove();
+    };
+    Card.commentsButtonClickFunc = () => {
+      const body = document.querySelector(`body`);
+
+      body.appendChild(Popup.render());
+    };
+    filmListContainer.appendChild(Card.render());
+  }
 });
