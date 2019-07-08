@@ -1,27 +1,9 @@
-/**
- * @property {String} _title
- * @property {Number} _rating
- * @property {Number} _year
- * @property {String} _duration
- * @property {String} _poster
- * @property {String} _description
- * @property {String} _genre
- * @property {Array} _comments
- */
-export default class FilmCard {
+import Component from "./component";
+
+export default class FilmCard extends Component {
   constructor(data, isMain = false) {
-    ({
-      title: this._title,
-      rating: this._rating,
-      year: this._year,
-      duration: this._duration,
-      poster: this._poster,
-      description: this._description,
-      genre: this._genre,
-      comments: this._comments
-    } = data);
+    super(data);
     this._isMain = isMain;
-    this._element = null;
 
     this._onCommentsButtonClickBinded = this._onCommentsButtonClick.bind(this);
   }
@@ -56,20 +38,11 @@ export default class FilmCard {
     return typeof this._onCommentsButtonClickFunc === `function` && this._onCommentsButtonClickFunc();
   }
 
-  bindListeners() {
+  _bindListeners() {
     this._element.querySelector(`.film-card__comments`).addEventListener(`click`, this._onCommentsButtonClickBinded);
   }
 
-  unbindListeners() {
+  _unbindListeners() {
     this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCommentsButtonClickBinded);
-  }
-
-  render() {
-    const divElement = document.createElement(`div`);
-    divElement.insertAdjacentHTML(`afterbegin`, this._template);
-    this._element = divElement.firstChild;
-    this.bindListeners();
-
-    return this._element;
   }
 }

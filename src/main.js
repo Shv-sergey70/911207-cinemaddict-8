@@ -2,10 +2,7 @@ import createFilter from './create-filter.js';
 import FilmCard from './film-card.js';
 import getFilmCardData from './film-card-data.js';
 import FilmCardPopup from './film-card-popup.js';
-
-const getRandomIntegerInRange = (min, max) => {
-  return Math.floor((Math.random() * (max + 1 - min)) + min);
-};
+import {clearHtmlBlock, getRandomIntegerInRange} from "./utility";
 
 const filtersFilmsCount = {
   MIN: 1,
@@ -38,9 +35,7 @@ const mainNavigationBlock = document.querySelector(`.main-navigation`);
 const statNavigation = mainNavigationBlock.querySelector(`.main-navigation__item--additional`);
 const filmsListContainerBlock = document.querySelector(`.films-list__container`);
 const filmsListsExtraBlocks = document.querySelectorAll(`.films-list--extra`);
-const clearHtmlBlock = (domElement) => {
-  domElement.innerText = ``;
-};
+
 const renderMainFilmCards = (cardsForRenderCount) => {
   clearHtmlBlock(filmsListContainerBlock);
   for (let i = 0; i < cardsForRenderCount; i++) {
@@ -49,7 +44,6 @@ const renderMainFilmCards = (cardsForRenderCount) => {
     const Popup = new FilmCardPopup(cardData);
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
-      document.querySelector(`.film-details`).remove();
     };
     Card.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
@@ -88,7 +82,6 @@ filmsListsExtraBlocks.forEach((filmListExtraBlock) => {
     const Popup = new FilmCardPopup(cardData);
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
-      document.querySelector(`.film-details`).remove();
     };
     Card.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
