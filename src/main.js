@@ -1,11 +1,9 @@
 import createFilter from './create-filter.js';
-import FilmCard from './film-card.js';
 import getFilmCardData from './film-card-data.js';
 import FilmCardPopup from './film-card-popup.js';
-
-const getRandomIntegerInRange = (min, max) => {
-  return Math.floor((Math.random() * (max + 1 - min)) + min);
-};
+import {clearHtmlBlock, getRandomIntegerInRange} from "./utility";
+import FilmCardExtra from "./film-card-extra";
+import FilmCardMain from "./film-card-main";
 
 const filtersFilmsCount = {
   MIN: 1,
@@ -38,25 +36,22 @@ const mainNavigationBlock = document.querySelector(`.main-navigation`);
 const statNavigation = mainNavigationBlock.querySelector(`.main-navigation__item--additional`);
 const filmsListContainerBlock = document.querySelector(`.films-list__container`);
 const filmsListsExtraBlocks = document.querySelectorAll(`.films-list--extra`);
-const clearHtmlBlock = (domElement) => {
-  domElement.innerText = ``;
-};
+
 const renderMainFilmCards = (cardsForRenderCount) => {
   clearHtmlBlock(filmsListContainerBlock);
   for (let i = 0; i < cardsForRenderCount; i++) {
     const cardData = getFilmCardData();
-    const Card = new FilmCard(cardData, true);
+    const CardMain = new FilmCardMain(cardData);
     const Popup = new FilmCardPopup(cardData);
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
-      document.querySelector(`.film-details`).remove();
     };
-    Card.commentsButtonClickFunc = () => {
+    CardMain.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
 
       body.appendChild(Popup.render());
     };
-    filmsListContainerBlock.appendChild(Card.render());
+    filmsListContainerBlock.appendChild(CardMain.render());
   }
 };
 const onFilterClick = () => {
@@ -84,17 +79,16 @@ filmsListsExtraBlocks.forEach((filmListExtraBlock) => {
 
   for (let i = 0; i < filmsCardsCount.EXTRA; i++) {
     const cardData = getFilmCardData();
-    const Card = new FilmCard(cardData);
+    const CardExtra = new FilmCardExtra(cardData);
     const Popup = new FilmCardPopup(cardData);
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
-      document.querySelector(`.film-details`).remove();
     };
-    Card.commentsButtonClickFunc = () => {
+    CardExtra.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
 
       body.appendChild(Popup.render());
     };
-    filmListContainer.appendChild(Card.render());
+    filmListContainer.appendChild(CardExtra.render());
   }
 });

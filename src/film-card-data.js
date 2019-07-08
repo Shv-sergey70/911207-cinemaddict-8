@@ -1,12 +1,5 @@
-const getRandomIntegerInRange = (min, max) => {
-  return Math.floor((Math.random() * (max + 1 - min)) + min);
-};
-const getRandomArrayValue = (arr) => {
-  return arr[getRandomIntegerInRange(0, arr.length - 1)];
-};
-const getRandomDecimal = (min, max) => {
-  return ((Math.random() * (max - min)) + min).toFixed(1);
-};
+import {getRandomArrayValue, getRandomDecimal, getRandomIntegerInRange} from "./utility";
+
 const FILMS_TITLES = [
   `The 400 Blows`,
   `La Haine`,

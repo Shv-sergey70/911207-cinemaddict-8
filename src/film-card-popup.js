@@ -1,26 +1,10 @@
-/**
- * @property {String} _title
- * @property {Number} _rating
- * @property {Number} _year
- * @property {String} _duration
- * @property {String} _poster
- * @property {String} _description
- * @property {String} _genre
- * @property {Array} _comments
- */
-export default class FilmCardPopup {
+import Component from "./component";
+
+export default class FilmCardPopup extends Component {
   constructor(data) {
-    ({
-      title: this._title,
-      rating: this._rating,
-      year: this._year,
-      duration: this._duration,
-      poster: this._poster,
-      description: this._description,
-      genre: this._genre,
-      comments: this._comments
-    } = data);
-    this._element = null;
+    super(data);
+
+    this._onCloseButtonClickBinded = this._onCloseButtonClick.bind(this);
   }
 
   set setOnCloseButtonClickFunc(func) {
@@ -201,24 +185,10 @@ export default class FilmCardPopup {
   }
 
   _bindListeners() {
-    this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClick.bind(this));
+    this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClickBinded);
   }
 
   _unbindListeners() {
-    this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClick);
-  }
-
-  render() {
-    const divElement = document.createElement(`div`);
-    divElement.insertAdjacentHTML(`afterbegin`, this._template);
-    this._element = divElement.firstChild;
-    this._bindListeners();
-
-    return this._element;
-  }
-
-  remove() {
-    this._unbindListeners();
-    this._element = null;
+    this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClickBinded);
   }
 }
