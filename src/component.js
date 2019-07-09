@@ -1,30 +1,11 @@
 import {createDomElement} from "./utility";
 
-/**
- * @property {String} _title
- * @property {Number} _rating
- * @property {Number} _releaseDate
- * @property {String} _duration
- * @property {String} _poster
- * @property {String} _description
- * @property {Array} _genres
- * @property {Object} _states
- */
 export default class Component {
-  constructor(data) {
+  constructor() {
     if (new.target === Component) {
       throw new Error(`Can't create instance of abstract class Component`);
     }
-    ({
-      title: this._title,
-      rating: this._rating,
-      releaseDate: this._releaseDate,
-      duration: this._duration,
-      poster: this._poster,
-      description: this._description,
-      genres: this._genres,
-      states: this._states
-    } = data);
+
     this._element = null;
   }
 
@@ -41,20 +22,6 @@ export default class Component {
     this._bindListeners();
 
     return this._element;
-  }
-
-  get states() {
-    return this._states;
-  }
-
-  setState(stateType, value) {
-    console.log(stateType);
-    console.log(this._states[stateType]);
-    if (this._states[stateType] === undefined) {
-      throw new Error(`Incorrect state type`);
-    }
-
-    this._states[stateType] = value;
   }
 
   remove() {

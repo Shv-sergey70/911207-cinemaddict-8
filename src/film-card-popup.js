@@ -8,11 +8,11 @@
  * @property {String} _country
  * @property {String} _ageRate
  */
-import Component from "./component";
+import FilmAbstract from "./film-abstract";
 import {keyCodes} from "./utility";
 import moment from "moment";
 
-export default class FilmCardPopup extends Component {
+export default class FilmCardPopup extends FilmAbstract {
   constructor(data) {
     super(data);
 
@@ -252,11 +252,15 @@ export default class FilmCardPopup extends Component {
     this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).addEventListener(`keydown`, this._onCommentKeydownBinded);
     this._element.querySelector(`.film-details__user-rating-score`).addEventListener(`click`, this._onRatingInputClickBinded);
+    this._element.querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._onAddToWatchListButtonClickBinded);
+    this._element.querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
   }
 
   _unbindListeners() {
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).removeEventListener(`keydown`, this._onCommentKeydownBinded);
-    this._element.querySelector(`.film-details__user-rating-score`).addEventListener(`click`, this._onRatingInputClickBinded);
+    this._element.querySelector(`.film-details__user-rating-score`).removeEventListener(`click`, this._onRatingInputClickBinded);
+    this._element.querySelector(`.film-details__control-label--watchlist`).removeEventListener(`click`, this._onAddToWatchListButtonClickBinded);
+    this._element.querySelector(`.film-details__control-label--watched`).removeEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
   }
 }
