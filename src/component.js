@@ -8,6 +8,7 @@ import {createDomElement} from "./utility";
  * @property {String} _poster
  * @property {String} _description
  * @property {Array} _genres
+ * @property {Object} _states
  */
 export default class Component {
   constructor(data) {
@@ -21,7 +22,8 @@ export default class Component {
       duration: this._duration,
       poster: this._poster,
       description: this._description,
-      genres: this._genres
+      genres: this._genres,
+      states: this._states
     } = data);
     this._element = null;
   }
@@ -41,9 +43,29 @@ export default class Component {
     return this._element;
   }
 
+  get states() {
+    return this._states;
+  }
+
+  setState(stateType, value) {
+    console.log(stateType);
+    console.log(this._states[stateType]);
+    if (this._states[stateType] === undefined) {
+      throw new Error(`Incorrect state type`);
+    }
+
+    this._states[stateType] = value;
+  }
+
   remove() {
     this._unbindListeners();
     this._element.remove();
     this._element = null;
+  }
+
+  _rerender() {
+    this._unbindListeners();
+    this._element.innerHTML = this._template;
+    this._bindListeners();
   }
 }

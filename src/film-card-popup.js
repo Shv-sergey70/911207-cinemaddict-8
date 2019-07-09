@@ -109,18 +109,18 @@ export default class FilmCardPopup extends Component {
     </div>
 
     <section class="film-details__controls">
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
-      <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
-
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" checked>
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._states.isInWatchList ? `checked` : ``}>
+        <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+  
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${this._states.isWatched ? `checked` : ``}>
       <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
-      <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
-    </section>
-
-    <section class="film-details__comments-wrap">
-      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments.length}</span></h3>
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._states.isFavorite? `checked` : ``}>
+        <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
+      </section>
+  
+      <section class="film-details__comments-wrap">
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments.length}</span></h3>
 
       <ul class="film-details__comments-list">
         ${this._comments.map((comment) => `
@@ -181,12 +181,6 @@ export default class FilmCardPopup extends Component {
 </section>`.trim();
   }
 
-  _rerenderPopup() {
-    this._unbindListeners();
-    this._element.innerHTML = this._template;
-    this._bindListeners();
-  }
-
   _onCloseButtonClick() {
     return typeof this._onCloseButtonClickFunc === `function` && this._onCloseButtonClickFunc();
   }
@@ -198,7 +192,7 @@ export default class FilmCardPopup extends Component {
   _onRatingInputClick(evt) {
     if (evt.target.tagName.toLowerCase() === `input`) {
       this._ownRating = Number(evt.target.value);
-      this._rerenderPopup();
+      this._rerender();
     }
   }
 
@@ -249,7 +243,7 @@ export default class FilmCardPopup extends Component {
       this._comments.push(entry.comments);
       this._ownRating = entry.ownRating;
 
-      this._rerenderPopup();
+      this._rerender();
       this._onSubmitFormBinded();
     }
   }

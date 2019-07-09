@@ -27,4 +27,16 @@ export default class FilmCardMain extends FilmCardAbstract {
           </form>
         </article>`.trim();
   }
+
+  _bindListeners() {
+    super._bindListeners();
+    this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, this._onAddToWatchListButtonClickBinded);
+    this._element.querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+  }
+
+  _unbindListeners() {
+    super._unbindListeners();
+    this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).removeEventListener(`click`, this._onAddToWatchListButtonClickBinded);
+    this._element.querySelector(`.film-card__controls-item--mark-as-watched`).removeEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+  }
 }

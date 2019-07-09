@@ -179,5 +179,10 @@ export default () => ({
 
     return ratesArr;
   },
-  emoji: EMOJI
+  emoji: EMOJI,
+  states: {
+    isInWatchList: false,
+    isWatched: false,
+    isFavorite: false
+  }
 });

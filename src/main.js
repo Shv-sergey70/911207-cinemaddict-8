@@ -43,6 +43,7 @@ const renderMainFilmCards = (cardsForRenderCount) => {
     const cardData = getFilmCardData();
     const CardMain = new FilmCardMain(cardData);
     const Popup = new FilmCardPopup(cardData);
+
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
     };
@@ -53,6 +54,16 @@ const renderMainFilmCards = (cardsForRenderCount) => {
       const body = document.querySelector(`body`);
 
       body.appendChild(Popup.render());
+    };
+    CardMain.onMarkAsWatched = () => {
+      CardMain.setState(`isWatched`, !CardMain.states.isWatched);
+      Popup.setState(`isWatched`, CardMain.states.isWatched);
+      // CardMain._rerender();
+    };
+    CardMain.onAddToWatchList = () => {
+      CardMain.setState(`isInWatchList`, !CardMain.states.isInWatchList);
+      Popup.setState(`isInWatchList`, CardMain.states.isInWatchList);
+      // CardMain._rerender();
     };
     filmsListContainerBlock.appendChild(CardMain.render());
   }
