@@ -16,3 +16,7 @@ export const createDomElement = (template) => {
 
   return divElement.firstChild;
 };
+export const keyCodes = {
+  ENTER: `Enter`
+};
+export const YEAR_TIMESTAMP_MS = 31536000000;

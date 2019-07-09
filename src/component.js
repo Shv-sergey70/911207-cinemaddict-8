@@ -3,12 +3,11 @@ import {createDomElement} from "./utility";
 /**
  * @property {String} _title
  * @property {Number} _rating
- * @property {Number} _year
+ * @property {Number} _releaseDate
  * @property {String} _duration
  * @property {String} _poster
  * @property {String} _description
- * @property {String} _genre
- * @property {Array} _comments
+ * @property {Array} _genres
  */
 export default class Component {
   constructor(data) {
@@ -18,12 +17,11 @@ export default class Component {
     ({
       title: this._title,
       rating: this._rating,
-      year: this._year,
+      releaseDate: this._releaseDate,
       duration: this._duration,
       poster: this._poster,
       description: this._description,
-      genre: this._genre,
-      comments: this._comments
+      genres: this._genres
     } = data);
     this._element = null;
   }

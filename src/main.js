@@ -1,6 +1,6 @@
-import createFilter from './create-filter.js';
-import getFilmCardData from './film-card-data.js';
-import FilmCardPopup from './film-card-popup.js';
+import createFilter from './create-filter';
+import getFilmCardData from './film-card-data';
+import FilmCardPopup from './film-card-popup';
 import {clearHtmlBlock, getRandomIntegerInRange} from "./utility";
 import FilmCardExtra from "./film-card-extra";
 import FilmCardMain from "./film-card-main";
@@ -46,6 +46,9 @@ const renderMainFilmCards = (cardsForRenderCount) => {
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
     };
+    Popup.setOnSubmitCallbackFunc = () => {
+      CardMain.updateCommentsCount(Popup._comments.length);
+    };
     CardMain.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
 
@@ -83,6 +86,9 @@ filmsListsExtraBlocks.forEach((filmListExtraBlock) => {
     const Popup = new FilmCardPopup(cardData);
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
+    };
+    Popup.setOnSubmitCallbackFunc = () => {
+      CardExtra.updateCommentsCount(Popup._comments.length);
     };
     CardExtra.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
