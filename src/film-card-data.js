@@ -1,4 +1,4 @@
-import {getRandomArrayValue, getRandomDecimal, getRandomIntegerInRange} from "./utility";
+import {getRandomArrayValue, getRandomDecimal, getRandomIntegerInRange, YEAR_TIMESTAMP_MS} from "./utility";
 
 const FILMS_TITLES = [
   `The 400 Blows`,
@@ -17,15 +17,58 @@ const FILMS_TITLES = [
   `End of Days`,
   `Enemy at the Gates`
 ];
-const GENRES = [
-  `Comedy`,
-  `Drama`,
-  `History`,
-  `Action`,
-  `Detective`,
-  `Horror`,
-  `Thriller`
+const DIRECTORS = [
+  `Stanley Kubrick`,
+  `David Fincher`,
+  `Bryan Singer`,
+  `Brian De Palma`,
+  `Hayao Miyazaki`
 ];
+
+const WRITERS = [
+  `Christopher Nolan`,
+  `Joel Coen`,
+  `Paul Thomas Anderson`,
+  `Jason Reitman`,
+  `Charlie Kaufman`,
+  `Quentin Tarantino`
+];
+
+const actors = {
+  MIN: 1,
+  MAX: 5,
+  LIST: [
+    `Jack Nicholson`,
+    `Marlon Brando`,
+    `Robert De Niro`,
+    `Al Pacino`,
+    `Daniel Day-Lewis`,
+    `Dustin Hoffman`,
+    `Tom Hanks`,
+    `Anthony Hopkins`
+  ]
+};
+
+const COUNTRIES = [
+  `USA`,
+  `UK`,
+  `France`,
+  `Italy`,
+  `Canada`
+];
+const genres = {
+  MIN: 1,
+  MAX: 4,
+  LIST: [
+    `Comedy`,
+    `Drama`,
+    `History`,
+    `Action`,
+    `Detective`,
+    `Horror`,
+    `Thriller`
+  ]
+};
 const POSTERS = [
   `accused`,
   `blackmail`,
@@ -52,6 +95,13 @@ const comments = {
     `The BEST movie EVER!`
   ]
 };
+const AGE_RATES = [
+  `G`,
+  `PG`,
+  `PG-13`,
+  `R`,
+  `NC-17`
+];
 const rates = {
   MIN: 1,
   MAX: 10
@@ -82,16 +132,25 @@ const generateDescription = () => {
 
   return descriptionArray.join(`. `);
 };
+const generateUniqueValuesArrayInRangeFrom = (arr, minValuesCount, maxValuesCount) => {
+  const resultArr = [];
+  const arrCopy = [...arr];
+
+  for (let i = 0; i < getRandomIntegerInRange(minValuesCount, maxValuesCount); i++) {
+    resultArr.push(arrCopy.splice(getRandomIntegerInRange(0, arrCopy.length - 1), 1)[0]);
+  }
+
+  return resultArr;
+};
 const getComments = () => {
-  const commentsNumber = getRandomIntegerInRange(comments.MIN, comments.MAX);
   const commentsArr = [];
 
-  for (let i = 0; i < commentsNumber; i++) {
+  for (let i = 0; i < getRandomIntegerInRange(comments.MIN, comments.MAX); i++) {
     commentsArr.push({
       emoji: getRandomArrayValue(Object.values(EMOJI)),
       text: getRandomArrayValue(comments.TEXT),
       author: getRandomArrayValue(AUTHORS),
-      dateAdded: `3 days ago`
+      dateAdded: getRandomIntegerInRange(Date.now() - YEAR_TIMESTAMP_MS, Date.now())
     });
   }
 
@@ -101,15 +160,17 @@ const getComments = () => {
 export default () => ({
   title: getRandomArrayValue(FILMS_TITLES),
   rating: getRandomDecimal(1, 10),
-  year: getRandomIntegerInRange(1970, 2019),
-  genre: getRandomArrayValue(GENRES),
+  releaseDate: new Date(getRandomIntegerInRange(1970, 2019), getRandomIntegerInRange(0, 1), getRandomIntegerInRange(1, 31)),
+  genres: generateUniqueValuesArrayInRangeFrom(genres.LIST, genres.MIN, genres.MAX),
   poster: `./images/posters/${getRandomArrayValue(POSTERS)}.jpg`,
   description: generateDescription(),
   comments: getComments(),
-  get duration() {
-    const timeMinutes = getRandomIntegerInRange(50, 90);
-    return `${Math.floor(timeMinutes / 60)}h&nbsp;${timeMinutes % 60}m`;
-  },
+  duration: getRandomIntegerInRange(50, 200),
+  director: getRandomArrayValue(DIRECTORS),
+  writers: getRandomArrayValue(WRITERS),
+  actors: generateUniqueValuesArrayInRangeFrom(actors.LIST, actors.MIN, actors.MAX),
+  country: getRandomArrayValue(COUNTRIES),
+  ageRate: getRandomArrayValue(AGE_RATES),
   get rates() {
     const ratesArr = [];
     for (let i = rates.MIN; i <= rates.MAX; i++) {

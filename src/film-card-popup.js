@@ -2,9 +2,15 @@
  * @property {Array} _comments
  * @property {Object} _rates
  * @property {Object} _emoji
+ * @property {String} _director
+ * @property {String} _writers
+ * @property {Array} _actors
+ * @property {String} _country
+ * @property {String} _ageRate
  */
 import Component from "./component";
 import {keyCodes} from "./utility";
+import moment from "moment";
 
 export default class FilmCardPopup extends Component {
   constructor(data) {
@@ -13,12 +19,18 @@ export default class FilmCardPopup extends Component {
     ({
       comments: this._comments,
       rates: this._rates,
-      emoji: this._emoji} = data);
+      emoji: this._emoji,
+      director: this._director,
+      writers: this._writers,
+      actors: this._actors,
+      country: this._country,
+      ageRate: this._ageRate} = data);
 
     this._ownRating = null;
     this._onCloseButtonClickBinded = this._onCloseButtonClick.bind(this);
     this._onSubmitFormBinded = this._onSubmitForm.bind(this);
     this._onCommentKeydownBinded = this._onCommentKeydown.bind(this);
+    this._onRatingInputClickBinded = this._onRatingInputClick.bind(this);
   }
 
   set setOnCloseButtonClickFunc(func) {
@@ -40,7 +52,7 @@ export default class FilmCardPopup extends Component {
       <div class="film-details__poster">
         <img class="film-details__poster-img" src="${this._poster}" alt="${this._title}">
 
-        <p class="film-details__age">18+</p>
+        <p class="film-details__age">${this._ageRate}</p>
       </div>
 
       <div class="film-details__info">
@@ -59,34 +71,34 @@ export default class FilmCardPopup extends Component {
         <table class="film-details__table">
           <tr class="film-details__row">
             <td class="film-details__term">Director</td>
-            <td class="film-details__cell">Brad Bird</td>
+            <td class="film-details__cell">${this._director}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">Brad Bird</td>
+            <td class="film-details__cell">${this._writers}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-            <td class="film-details__cell">Samuel L. Jackson, Catherine Keener, Sophia Bush</td>
+            <td class="film-details__cell">${this._actors.join(`, `)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">15 June 2018 (USA)</td>
+            <td class="film-details__cell">${moment(this._releaseDate).format(`D MMMM YYYY`)} (${this._country})</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">118 min</td>
+            <td class="film-details__cell">${this._duration} min</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">USA</td>
+            <td class="film-details__cell">${this._country}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">Animation</span>
-              <span class="film-details__genre">Action</span>
-              <span class="film-details__genre">Adventure</span></td>
+              ${this._genres.map((genre) => `
+              <span class="film-details__genre">${genre}</span>`.trim()).join(``)}
+            </td>
           </tr>
         </table>
 
@@ -118,7 +130,7 @@ export default class FilmCardPopup extends Component {
             <p class="film-details__comment-text">${comment.text}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${comment.dateAdded}</span>
+              <span class="film-details__comment-day">${moment(comment.dateAdded).fromNow()}</span>
             </p>
           </div>
         </li>`.trim()).join(``)}
@@ -183,6 +195,13 @@ export default class FilmCardPopup extends Component {
     return typeof this._onSubmitCallbackFunc === `function` && this._onSubmitCallbackFunc();
   }
 
+  _onRatingInputClick(evt) {
+    if (evt.target.tagName.toLowerCase() === `input`) {
+      this._ownRating = Number(evt.target.value);
+      this._rerenderPopup();
+    }
+  }
+
   _createMapper(entry) {
     return {
       score: (value) => {
@@ -225,6 +244,8 @@ export default class FilmCardPopup extends Component {
       const formData = new FormData(this._element.querySelector(`.film-details__inner`));
       const entry = this._processForm(formData);
 
+      entry.comments.emoji = entry.comments.emoji ? entry.comments.emoji : this._emoji[`neutral-face`];
+
       this._comments.push(entry.comments);
       this._ownRating = entry.ownRating;
 
@@ -236,10 +257,12 @@ export default class FilmCardPopup extends Component {
   _bindListeners() {
     this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).addEventListener(`keydown`, this._onCommentKeydownBinded);
+    this._element.querySelector(`.film-details__user-rating-score`).addEventListener(`click`, this._onRatingInputClickBinded);
   }
 
   _unbindListeners() {
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).removeEventListener(`keydown`, this._onCommentKeydownBinded);
+    this._element.querySelector(`.film-details__user-rating-score`).addEventListener(`click`, this._onRatingInputClickBinded);
   }
 }

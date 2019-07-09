@@ -18,6 +18,10 @@ export default class FilmCardAbstract extends Component {
 
   get _template() {}
 
+  _getFormattedDuration() {
+    return `${Math.floor(this._duration / 60)}h ${this._duration % 60}m`;
+  }
+
   updateCommentsCount(newCommentsCount) {
     this._commentsCount = newCommentsCount;
     this._element.querySelector(`.film-card__comments`).textContent = `${this._commentsCount} comments`;
