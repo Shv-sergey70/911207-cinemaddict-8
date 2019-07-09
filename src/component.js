@@ -8,7 +8,6 @@ import {createDomElement} from "./utility";
  * @property {String} _poster
  * @property {String} _description
  * @property {String} _genre
- * @property {Array} _comments
  */
 export default class Component {
   constructor(data) {
@@ -22,8 +21,7 @@ export default class Component {
       duration: this._duration,
       poster: this._poster,
       description: this._description,
-      genre: this._genre,
-      comments: this._comments
+      genre: this._genre
     } = data);
     this._element = null;
   }

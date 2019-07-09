@@ -16,7 +16,7 @@ export default class FilmCardExtra extends FilmCardAbstract {
             <span class="film-card__genre">${this._genre}</span>
           </p>
           <img src="${this._poster}" alt="" class="film-card__poster">
-          <button class="film-card__comments">${this._comments.length} comments</button>
+          <button class="film-card__comments">${this._commentsCount} comments</button>
         </article>`.trim();
   }
 }

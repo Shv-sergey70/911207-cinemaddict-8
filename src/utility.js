@@ -16,3 +16,6 @@ export const createDomElement = (template) => {
 
   return divElement.firstChild;
 };
+export const keyCodes = {
+  ENTER: `Enter`
+};

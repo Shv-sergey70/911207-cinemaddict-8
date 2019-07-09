@@ -17,7 +17,7 @@ export default class FilmCardMain extends FilmCardAbstract {
           </p>
           <img src="${this._poster}" alt="" class="film-card__poster">
           <p class="film-card__description">${this._description}</p>
-          <button class="film-card__comments">${this._comments.length} comments</button>
+          <button class="film-card__comments">${this._commentsCount} comments</button>
 
           <form class="film-card__controls">
             <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>

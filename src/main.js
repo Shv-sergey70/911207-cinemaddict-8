@@ -46,6 +46,9 @@ const renderMainFilmCards = (cardsForRenderCount) => {
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
     };
+    Popup.setOnSubmitCallbackFunc = () => {
+      CardMain.updateCommentsCount(Popup._comments.length);
+    };
     CardMain.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
 
@@ -83,6 +86,9 @@ filmsListsExtraBlocks.forEach((filmListExtraBlock) => {
     const Popup = new FilmCardPopup(cardData);
     Popup.setOnCloseButtonClickFunc = () => {
       Popup.remove();
+    };
+    Popup.setOnSubmitCallbackFunc = () => {
+      CardExtra.updateCommentsCount(Popup._comments.length);
     };
     CardExtra.commentsButtonClickFunc = () => {
       const body = document.querySelector(`body`);
