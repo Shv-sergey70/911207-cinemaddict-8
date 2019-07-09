@@ -1,7 +1,7 @@
 import Component from "./component";
 
 export default class Filter extends Component {
-  constructor({name, id, isChecked, isAdditional}, filmsCount) {
+  constructor({name, id, isChecked, isAdditional, filmsCount}) {
     super();
 
     this._name = name;
@@ -13,7 +13,7 @@ export default class Filter extends Component {
   }
 
   get _template() {
-    return `<a href="#${this._id}" class="main-navigation__item ${this._isChecked ? `main-navigation__item--active` : ``}" ${this._isAdditional ? `main-navigation__item--additional` : ``}>${this._name} <span class="main-navigation__item-count">${this._filmsCount}</span></a>`.trim();
+    return `<a href="#${this._id}" class="main-navigation__item ${this._isChecked ? `main-navigation__item--active` : ``} ${this._isAdditional ? `main-navigation__item--additional` : ``}">${this._name} ${this._filmsCount ? `<span class="main-navigation__item-count">${this._filmsCount}</span>` : ``}</a>`.trim();
   }
 
   set onFilter(func) {

@@ -4,6 +4,9 @@ import {clearHtmlBlock, getRandomIntegerInRange} from "./utility";
 import FilmCardExtra from "./film-card-extra";
 import FilmCardMain from "./film-card-main";
 import Filter from "./filter";
+import Statistic from "./statistic";
+import Chart from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 const filmsCardsCount = {
   USUAL: 7,
@@ -14,6 +17,7 @@ const mainNavigationBlock = document.querySelector(`.main-navigation`);
 const statNavigation = mainNavigationBlock.querySelector(`.main-navigation__item--additional`);
 const filmsListContainerBlock = document.querySelector(`.films-list__container`);
 const filmsListsExtraBlocks = document.querySelectorAll(`.films-list--extra`);
+const StatisticClass = new Statistic();
 const getFilmsCardsData = (cardsForRenderCount) => {
   const cardsData = [];
 
@@ -67,7 +71,7 @@ clearHtmlBlock(mainNavigationBlock);
 renderMainFilmCards(mainFilmsCardsData);
 const createFilters = () => {
   filtersData.forEach((filterData) => {
-    const FilterClass = new Filter(filterData, getRandomIntegerInRange(1, 100));
+    const FilterClass = new Filter(filterData);
 
     switch (filterData.id) {
       case `watchlist`: {
@@ -99,6 +103,11 @@ const createFilters = () => {
         break;
       }
       case `stats`: {
+        FilterClass.onFilter = () => {
+          document.querySelector(`.films`).classList.add(`visually-hidden`);
+          document.querySelector(`main`).appendChild(StatisticClass.render());
+        };
+
         break;
       }
       default: {
@@ -107,7 +116,7 @@ const createFilters = () => {
     }
     mainNavigationBlock.appendChild(FilterClass.render());
   });
-  mainNavigationBlock.appendChild(statNavigation);
+  // mainNavigationBlock.appendChild(statNavigation);
 };
 createFilters();
 

@@ -196,17 +196,20 @@ export const filtersData = [
   {
     name: `Watchlist`,
     id: `watchlist`,
-    isChecked: false
+    isChecked: false,
+    filmsCount: getRandomIntegerInRange(1, 100)
   },
   {
     name: `History`,
     id: `history`,
-    isChecked: false
+    isChecked: false,
+    filmsCount: getRandomIntegerInRange(1, 100)
   },
   {
     name: `Favorites`,
     id: `favorites`,
-    isChecked: false
+    isChecked: false,
+    filmsCount: getRandomIntegerInRange(1, 100)
   },
   {
     name: `Stats`,
