@@ -157,7 +157,7 @@ const getComments = () => {
   return commentsArr;
 };
 
-export default () => ({
+export const getFilmCardData = () => ({
   title: getRandomArrayValue(FILMS_TITLES),
   rating: getRandomDecimal(1, 10),
   releaseDate: new Date(getRandomIntegerInRange(1970, 2019), getRandomIntegerInRange(0, 1), getRandomIntegerInRange(1, 31)),
@@ -179,5 +179,42 @@ export default () => ({
 
     return ratesArr;
   },
-  emoji: EMOJI
+  emoji: EMOJI,
+  states: {
+    isInWatchList: false,
+    isWatched: false,
+    isFavorite: false
+  }
 });
+
+export const filtersData = [
+  {
+    name: `All movies`,
+    id: `all`,
+    isChecked: true
+  },
+  {
+    name: `Watchlist`,
+    id: `watchlist`,
+    isChecked: false,
+    filmsCount: getRandomIntegerInRange(1, 100)
+  },
+  {
+    name: `History`,
+    id: `history`,
+    isChecked: false,
+    filmsCount: getRandomIntegerInRange(1, 100)
+  },
+  {
+    name: `Favorites`,
+    id: `favorites`,
+    isChecked: false,
+    filmsCount: getRandomIntegerInRange(1, 100)
+  },
+  {
+    name: `Stats`,
+    id: `stats`,
+    isChecked: false,
+    isAdditional: true
+  }
+];

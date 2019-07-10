@@ -1,9 +1,9 @@
 /**
  * @property {Number} _commentsCount
  */
-import Component from "./component";
+import FilmAbstract from "./film-abstract";
 
-export default class FilmCardAbstract extends Component {
+export default class FilmCardAbstract extends FilmAbstract {
   constructor(data) {
     super(data);
 
@@ -16,8 +16,6 @@ export default class FilmCardAbstract extends Component {
     this._onCommentsButtonClickFunc = fn;
   }
 
-  get _template() {}
-
   _getFormattedDuration() {
     return `${Math.floor(this._duration / 60)}h ${this._duration % 60}m`;
   }
@@ -29,13 +27,5 @@ export default class FilmCardAbstract extends Component {
 
   _onCommentsButtonClick() {
     return typeof this._onCommentsButtonClickFunc === `function` && this._onCommentsButtonClickFunc();
-  }
-
-  _bindListeners() {
-    this._element.querySelector(`.film-card__comments`).addEventListener(`click`, this._onCommentsButtonClickBinded);
-  }
-
-  _unbindListeners() {
-    this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCommentsButtonClickBinded);
   }
 }
