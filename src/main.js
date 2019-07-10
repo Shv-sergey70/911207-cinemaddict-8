@@ -1,12 +1,10 @@
 import {getFilmCardData, filtersData} from './data';
 import FilmCardPopup from './film-card-popup';
-import {clearHtmlBlock, getRandomIntegerInRange} from "./utility";
+import {clearHtmlBlock} from "./utility";
 import FilmCardExtra from "./film-card-extra";
 import FilmCardMain from "./film-card-main";
 import Filter from "./filter";
 import Statistic from "./statistic";
-import Chart from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 
 const filmsCardsCount = {
   USUAL: 7,
@@ -14,10 +12,8 @@ const filmsCardsCount = {
 };
 
 const mainNavigationBlock = document.querySelector(`.main-navigation`);
-const statNavigation = mainNavigationBlock.querySelector(`.main-navigation__item--additional`);
 const filmsListContainerBlock = document.querySelector(`.films-list__container`);
 const filmsListsExtraBlocks = document.querySelectorAll(`.films-list--extra`);
-const StatisticClass = new Statistic();
 const getFilmsCardsData = (cardsForRenderCount) => {
   const cardsData = [];
 
@@ -30,6 +26,8 @@ const getFilmsCardsData = (cardsForRenderCount) => {
 
 const mainFilmsCardsData = getFilmsCardsData(filmsCardsCount.USUAL);
 const renderMainFilmCards = (cardsData) => {
+  document.querySelector(`.films`).classList.remove(`visually-hidden`);
+  StatisticClass.remove();
   clearHtmlBlock(filmsListContainerBlock);
   cardsData.forEach((cardData) => {
     const CardMain = new FilmCardMain(cardData);
@@ -65,7 +63,7 @@ const renderMainFilmCards = (cardsData) => {
     filmsListContainerBlock.appendChild(CardMain.render());
   });
 };
-
+const StatisticClass = new Statistic(mainFilmsCardsData);
 clearHtmlBlock(mainNavigationBlock);
 
 renderMainFilmCards(mainFilmsCardsData);
@@ -104,6 +102,7 @@ const createFilters = () => {
       }
       case `stats`: {
         FilterClass.onFilter = () => {
+          StatisticClass.remove();
           document.querySelector(`.films`).classList.add(`visually-hidden`);
           document.querySelector(`main`).appendChild(StatisticClass.render());
         };
@@ -116,7 +115,6 @@ const createFilters = () => {
     }
     mainNavigationBlock.appendChild(FilterClass.render());
   });
-  // mainNavigationBlock.appendChild(statNavigation);
 };
 createFilters();
 

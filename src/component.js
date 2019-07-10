@@ -25,9 +25,11 @@ export default class Component {
   }
 
   remove() {
-    this._unbindListeners();
-    this._element.remove();
-    this._element = null;
+    if (this._element !== null) {
+      this._unbindListeners();
+      this._element.remove();
+      this._element = null;
+    }
   }
 
   _rerender() {
