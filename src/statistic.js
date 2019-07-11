@@ -12,7 +12,8 @@ export default class Statistic extends Component {
     this._actualGenres = null;
     this._filmsCountByGenre = null;
     this._totalDurationFormatted = null;
-    this._chart;
+    this._topGenre = null;
+    this._chart = null;
 
     // this.onStatisticClick = this._onStatisticClick.bind(this);
 
@@ -66,6 +67,7 @@ export default class Statistic extends Component {
     this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched);
     this._actualGenres = this._getActualGenres();
     this._filmsCountByGenre = this._countFilmsByGenre();
+    this._topGenre = this._filmsCountByGenre.length !== 0 ? this._filmsCountByGenre[0].name : 'none';
     this._totalDurationFormatted = this._getTotalDurationFormatted();
   }
 
@@ -104,7 +106,7 @@ export default class Statistic extends Component {
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">${this._filmsCountByGenre[0].name}</p>
+        <p class="statistic__item-text">${this._topGenre}</p>
       </li>
     </ul>
 

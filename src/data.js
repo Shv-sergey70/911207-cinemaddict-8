@@ -1,4 +1,4 @@
-import {getRandomArrayValue, getRandomDecimal, getRandomIntegerInRange, YEAR_TIMESTAMP_MS} from "./utility";
+import {EmojiDict, getRandomArrayValue, getRandomDecimal, getRandomIntegerInRange, YEAR_TIMESTAMP_MS} from "./utility";
 
 const FILMS_TITLES = [
   `The 400 Blows`,
@@ -25,14 +25,17 @@ const DIRECTORS = [
   `Hayao Miyazaki`
 ];
 
-const WRITERS = [
-  `Christopher Nolan`,
-  `Joel Coen`,
-  `Paul Thomas Anderson`,
-  `Jason Reitman`,
-  `Charlie Kaufman`,
-  `Quentin Tarantino`
-];
+const writers = {
+  MIN: 1,
+  MAX: 3,
+  LIST: [
+    `Christopher Nolan`,
+    `Joel Coen`,
+    `Paul Thomas Anderson`,
+    `Jason Reitman`,
+    `Charlie Kaufman`,
+    `Quentin Tarantino`
+]};
 
 const actors = {
   MIN: 1,
@@ -102,15 +105,6 @@ const AGE_RATES = [
   `R`,
   `NC-17`
 ];
-const rates = {
-  MIN: 1,
-  MAX: 10
-};
-const EMOJI = {
-  'emoji-sleeping': `😴`,
-  'neutral-face': `😐`,
-  'grinning': `😀`
-};
 const AUTHORS = [
   `Jack Nicholson`,
   `Marlon Brando`,
@@ -124,9 +118,8 @@ const AUTHORS = [
 const FILMS_DESCRIPTIONS = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
 const filmsDescriptionsArray = FILMS_DESCRIPTIONS.split(`. `);
 const generateDescription = () => {
-  const numberOfSentences = getRandomIntegerInRange(1, 3);
   const descriptionArray = [];
-  for (let i = 0; i < numberOfSentences; i++) {
+  for (let i = 0; i < getRandomIntegerInRange(1, 3); i++) {
     descriptionArray.push(getRandomArrayValue(filmsDescriptionsArray));
   }
 
@@ -147,10 +140,10 @@ const getComments = () => {
 
   for (let i = 0; i < getRandomIntegerInRange(comments.MIN, comments.MAX); i++) {
     commentsArr.push({
-      emoji: getRandomArrayValue(Object.values(EMOJI)),
-      text: getRandomArrayValue(comments.TEXT),
+      emotion: getRandomArrayValue(Object.keys(EmojiDict)),
+      comment: getRandomArrayValue(comments.TEXT),
       author: getRandomArrayValue(AUTHORS),
-      dateAdded: getRandomIntegerInRange(Date.now() - YEAR_TIMESTAMP_MS, Date.now())
+      date: getRandomIntegerInRange(Date.now() - YEAR_TIMESTAMP_MS, Date.now())
     });
   }
 
@@ -167,24 +160,18 @@ export const getFilmCardData = () => ({
   comments: getComments(),
   duration: getRandomIntegerInRange(50, 200),
   director: getRandomArrayValue(DIRECTORS),
-  writers: getRandomArrayValue(WRITERS),
+  writers: generateUniqueValuesArrayInRangeFrom(writers.LIST, writers.MIN, writers.MAX),
   actors: generateUniqueValuesArrayInRangeFrom(actors.LIST, actors.MIN, actors.MAX),
-  country: getRandomArrayValue(COUNTRIES),
+  releaseCountry: getRandomArrayValue(COUNTRIES),
   ageRate: getRandomArrayValue(AGE_RATES),
-  get rates() {
-    const ratesArr = [];
-    for (let i = rates.MIN; i <= rates.MAX; i++) {
-      ratesArr.push(i);
-    }
-
-    return ratesArr;
-  },
-  emoji: EMOJI,
   states: {
     isInWatchList: false,
     isWatched: false,
     isFavorite: false
-  }
+  },
+  alternativeTitle: getRandomArrayValue(FILMS_TITLES),
+  ownRating: getRandomIntegerInRange(1, 10),
+  watchingTimestamp: getRandomIntegerInRange(Date.now - (YEAR_TIMESTAMP_MS), Date.now())
 });
 
 export const filtersData = [

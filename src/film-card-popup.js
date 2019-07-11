@@ -1,16 +1,22 @@
 /**
  * @property {Array} _comments
  * @property {Object} _rates
- * @property {Object} _emoji
+ * @property {Object} _emojiDict
  * @property {String} _director
  * @property {String} _writers
  * @property {Array} _actors
- * @property {String} _country
+ * @property {String} _releaseCountry
  * @property {String} _ageRate
+ * @property {String} _alternativeTitle
  */
 import FilmAbstract from "./film-abstract";
-import {keyCodes} from "./utility";
+import {keyCodes, EmojiDict} from "./utility";
 import moment from "moment";
+
+const rates = {
+  MIN: 1,
+  MAX: 10
+};
 
 export default class FilmCardPopup extends FilmAbstract {
   constructor(data) {
@@ -18,15 +24,15 @@ export default class FilmCardPopup extends FilmAbstract {
 
     ({
       comments: this._comments,
-      rates: this._rates,
-      emoji: this._emoji,
       director: this._director,
       writers: this._writers,
       actors: this._actors,
-      country: this._country,
-      ageRate: this._ageRate} = data);
+      releaseCountry: this._releaseCountry,
+      ageRate: this._ageRate,
+      ownRating: this._ownRating,
+      alternativeTitle: this._alternativeTitle} = data);
 
-    this._ownRating = null;
+    this._emojiDict = EmojiDict;
     this._onCloseButtonClickBinded = this._onCloseButtonClick.bind(this);
     this._onSubmitFormBinded = this._onSubmitForm.bind(this);
     this._onCommentKeydownBinded = this._onCommentKeydown.bind(this);
@@ -41,6 +47,15 @@ export default class FilmCardPopup extends FilmAbstract {
     this._onSubmitCallbackFunc = func;
   }
 
+  get _rates() {
+    const ratesArr = [];
+    for (let i = rates.MIN; i <= rates.MAX; i++) {
+      ratesArr.push(i);
+    }
+
+    return ratesArr;
+  }
+
   get _template() {
     return `
 <section class="film-details">
@@ -52,14 +67,14 @@ export default class FilmCardPopup extends FilmAbstract {
       <div class="film-details__poster">
         <img class="film-details__poster-img" src="${this._poster}" alt="${this._title}">
 
-        <p class="film-details__age">${this._ageRate}</p>
+        <p class="film-details__age">${this._ageRate}+</p>
       </div>
 
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
             <h3 class="film-details__title">${this._title}</h3>
-            <p class="film-details__title-original">Original: Невероятная семейка</p>
+            <p class="film-details__title-original">${this._alternativeTitle}</p>
           </div>
 
           <div class="film-details__rating">
@@ -75,7 +90,7 @@ export default class FilmCardPopup extends FilmAbstract {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">${this._writers}</td>
+            <td class="film-details__cell">${this._writers.join(`, `)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
@@ -83,7 +98,7 @@ export default class FilmCardPopup extends FilmAbstract {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">${moment(this._releaseDate).format(`D MMMM YYYY`)} (${this._country})</td>
+            <td class="film-details__cell">${moment(this._releaseDate).format(`D MMMM YYYY`)} (${this._releaseCountry})</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
@@ -91,7 +106,7 @@ export default class FilmCardPopup extends FilmAbstract {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">${this._country}</td>
+            <td class="film-details__cell">${this._releaseCountry}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
@@ -125,12 +140,12 @@ export default class FilmCardPopup extends FilmAbstract {
       <ul class="film-details__comments-list">
         ${this._comments.map((comment) => `
         <li class="film-details__comment">
-          <span class="film-details__comment-emoji">${comment.emoji}</span>
+          <span class="film-details__comment-emoji">${this._emojiDict[comment.emotion]}</span>
           <div>
-            <p class="film-details__comment-text">${comment.text}</p>
+            <p class="film-details__comment-text">${comment.comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${moment(comment.dateAdded).fromNow()}</span>
+              <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
             </p>
           </div>
         </li>`.trim()).join(``)}
@@ -142,9 +157,9 @@ export default class FilmCardPopup extends FilmAbstract {
           <input type="checkbox" class="film-details__add-emoji visually-hidden" id="add-emoji">
 
           <div class="film-details__emoji-list">
-          ${Object.keys(this._emoji).map((emojiClass) => `
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiClass}" value="${emojiClass}">
-            <label class="film-details__emoji-label" for="emoji-${emojiClass}">${this._emoji[emojiClass]}</label>`).join(``)}          
+          ${Object.keys(this._emojiDict).map((emojiName) => `
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiName}" value="${this._emojiDict[emojiName]}">
+            <label class="film-details__emoji-label" for="emoji-${emojiName}">${this._emojiDict[emojiName]}</label>`).join(``)}          
           </div>
         </div>
         <label class="film-details__comment-label">
@@ -217,7 +232,7 @@ export default class FilmCardPopup extends FilmAbstract {
         emoji: null,
         text: null,
         author: `Me`,
-        dateAdded: `3 days ago`
+        createTimestamp: `3 days ago`
       }
     };
 
