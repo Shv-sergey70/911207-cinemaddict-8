@@ -151,6 +151,7 @@ const getComments = () => {
 };
 
 export const getFilmCardData = () => ({
+  id: null,
   title: getRandomArrayValue(FILMS_TITLES),
   rating: getRandomDecimal(1, 10),
   releaseDate: new Date(getRandomIntegerInRange(1970, 2019), getRandomIntegerInRange(0, 1), getRandomIntegerInRange(1, 31)),

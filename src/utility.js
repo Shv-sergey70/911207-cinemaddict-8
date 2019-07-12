@@ -26,3 +26,5 @@ export const EmojiDict = {
   'neutral-face': `😐`,
   'grinning': `😀`
 };
+
+export const isFunction = (func) => typeof func === `function`;

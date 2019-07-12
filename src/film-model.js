@@ -24,6 +24,20 @@ export default class FilmModel {
     this.watchingTimestamp = data[`user_details`][`watching_date`];
   }
 
+  static toRaw(Film) {
+    return {
+      'id': Film._id,
+      'comments': Film._comments,
+      'user_details': {
+        'watchlist': Film.states.isInWatchList,
+        'already_watched': Film.states.isWatched,
+        'favorite': Film.states.isFavorite,
+        'personal_rating': Film._ownRating,
+        'watching_date': Film._watchingTimestamp
+      }
+    };
+  }
+
   static parseFilm(data) {
     return new FilmModel(data);
   }

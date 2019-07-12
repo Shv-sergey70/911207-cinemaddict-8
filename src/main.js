@@ -6,6 +6,8 @@ import FilmCardMain from "./film-card-main";
 import Filter from "./filter";
 import Statistic from "./statistic";
 import API from './api';
+import FilmModel from "./film-model";
+const ApiClass = new API();
 
 const filmsCardsCount = {
   USUAL: 7,
@@ -22,15 +24,44 @@ const getFilmsCardsData = (cardsForRenderCount) => {
   return cardsData;
 };
 
-const renderMainFilmCard = (cardData) => {
-  const CardMain = new FilmCardMain(cardData);
-  const Popup = new FilmCardPopup(cardData);
+const renderMainFilmCard = (defaultCardData) => {
+  const CardMain = new FilmCardMain(defaultCardData);
+  const Popup = new FilmCardPopup(defaultCardData);
 
   Popup.setOnCloseButtonClickFunc = () => {
     Popup.remove();
   };
-  Popup.setOnSubmitCallbackFunc = () => {
-    CardMain.updateCommentsCount(Popup._comments.length);
+  Popup.setOnCommentSubmitCallbackFunc = () => {
+    ApiClass.updateMovie({id: defaultCardData.id, data: FilmModel.toRaw(Popup)})
+      .then((updatedCardData) => {
+        defaultCardData = updatedCardData;
+        Popup.disableCommentsBlock(false);
+        Popup.resetCommentsBlock();
+        CardMain.updateCommentsCount(Popup._comments.length);
+        Popup._rerender();
+      })
+      .catch((error) => {
+        console.error(`Can't update movie: ${error}`);
+        Popup.setErrorCommentLabel(true);
+        Popup.shake();
+        Popup.disableCommentsBlock(false);
+        Popup.updateData(defaultCardData);
+      });
+  };
+  Popup.setOnRatingSubmitCallbackFunc = () => {
+    ApiClass.updateMovie({id: defaultCardData.id, data: FilmModel.toRaw(Popup)})
+      .then((updatedCardData) => {
+        defaultCardData = updatedCardData;
+        Popup.disableRatingBlock(false);
+        Popup._rerender();
+      })
+      .catch((error) => {
+        console.error(`Can't update movie: ${error}`);
+        Popup.disableRatingBlock(false);
+        Popup.setErrorRatingLabel(true);
+        Popup.shake();
+        Popup.updateData(defaultCardData);
+      });
   };
   CardMain.commentsButtonClickFunc = () => {
     const body = document.querySelector(`body`);
@@ -121,8 +152,12 @@ const createFilters = (filmsData, statistic) => {
 const mainNavigationBlock = document.querySelector(`.main-navigation`);
 const filmsListContainerBlock = document.querySelector(`.films-list__container`);
 const filmsListsExtraBlocks = document.querySelectorAll(`.films-list--extra`);
+const titleElement = document.querySelector(`.films-list__title`);
 const mainFilmsCardsData = getFilmsCardsData(filmsCardsCount.USUAL);
 clearHtmlBlock(mainNavigationBlock);
+clearHtmlBlock(filmsListContainerBlock);
+clearHtmlBlock(filmsListsExtraBlocks[0]);
+clearHtmlBlock(filmsListsExtraBlocks[1]);
 
 const renderPageWithData = (filmsData) => {
   const StatisticClass = new Statistic(filmsData);
@@ -130,14 +165,15 @@ const renderPageWithData = (filmsData) => {
   createFilters(filmsData, StatisticClass);
 };
 
-const ApiClass = new API();
+titleElement.classList.remove(`visually-hidden`);
 ApiClass.getMovies()
   .then((filmsData) => {
+    titleElement.classList.add(`visually-hidden`);
     renderPageWithData(filmsData);
   })
   .catch((error) => {
     console.error(`Loading data error: ${error}. Using mock data...`);
-    renderPageWithData(mainFilmsCardsData);
+    titleElement.textContent = `Something went wrong while loading movies. Check your connection or try again later`;
   });
 
 

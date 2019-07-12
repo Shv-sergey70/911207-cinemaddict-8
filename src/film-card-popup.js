@@ -10,7 +10,7 @@
  * @property {String} _alternativeTitle
  */
 import FilmAbstract from "./film-abstract";
-import {keyCodes, EmojiDict} from "./utility";
+import {keyCodes, EmojiDict, isFunction} from "./utility";
 import moment from "moment";
 
 const rates = {
@@ -23,7 +23,7 @@ export default class FilmCardPopup extends FilmAbstract {
     super(data);
 
     ({
-      comments: this._comments,
+      comments: [...this._comments],
       director: this._director,
       writers: this._writers,
       actors: this._actors,
@@ -34,17 +34,22 @@ export default class FilmCardPopup extends FilmAbstract {
 
     this._emojiDict = EmojiDict;
     this._onCloseButtonClickBinded = this._onCloseButtonClick.bind(this);
-    this._onSubmitFormBinded = this._onSubmitForm.bind(this);
+    this._onSubmitCommentFormBinded = this._onSubmitCommentForm.bind(this);
     this._onCommentKeydownBinded = this._onCommentKeydown.bind(this);
     this._onRatingInputClickBinded = this._onRatingInputClick.bind(this);
+    this._onSubmitRatingBinded = this._onSubmitRating.bind(this);
   }
 
   set setOnCloseButtonClickFunc(func) {
     this._onCloseButtonClickFunc = func;
   }
 
-  set setOnSubmitCallbackFunc(func) {
-    this._onSubmitCallbackFunc = func;
+  set setOnCommentSubmitCallbackFunc(func) {
+    this._onCommentSubmitCallbackFunc = func;
+  }
+
+  set setOnRatingSubmitCallbackFunc(func) {
+    this._onRatingSubmitCallbackFunc = func;
   }
 
   get _rates() {
@@ -130,7 +135,7 @@ export default class FilmCardPopup extends FilmAbstract {
         <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${this._states.isWatched ? `checked` : ``}>
       <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._states.isFavorite? `checked` : ``}>
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._states.isFavorite ? `checked` : ``}>
         <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
       </section>
   
@@ -158,7 +163,7 @@ export default class FilmCardPopup extends FilmAbstract {
 
           <div class="film-details__emoji-list">
           ${Object.keys(this._emojiDict).map((emojiName) => `
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiName}" value="${this._emojiDict[emojiName]}">
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiName}" value="${emojiName}">
             <label class="film-details__emoji-label" for="emoji-${emojiName}">${this._emojiDict[emojiName]}</label>`).join(``)}          
           </div>
         </div>
@@ -197,43 +202,88 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _onCloseButtonClick() {
-    return typeof this._onCloseButtonClickFunc === `function` && this._onCloseButtonClickFunc();
+    return isFunction(this._onCloseButtonClickFunc) && this._onCloseButtonClickFunc();
   }
 
-  _onSubmitForm() {
-    return typeof this._onSubmitCallbackFunc === `function` && this._onSubmitCallbackFunc();
+  _onSubmitCommentForm() {
+    return isFunction(this._onCommentSubmitCallbackFunc) && this._onCommentSubmitCallbackFunc();
+  }
+
+  _onSubmitRating() {
+    return isFunction(this._onRatingSubmitCallbackFunc) && this._onRatingSubmitCallbackFunc();
   }
 
   _onRatingInputClick(evt) {
     if (evt.target.tagName.toLowerCase() === `input`) {
+      this.disableRatingBlock(true);
+      console.log('yeap');
+      this.setErrorRatingLabel(false);
+
       this._ownRating = Number(evt.target.value);
-      this._rerender();
+      // this._rerender();
+      this._onSubmitRatingBinded();
     }
   }
 
   _createMapper(entry) {
     return {
-      score: (value) => {
-        entry.ownRating = Number(value);
-      },
-      comment: (value) => {
-        entry.comments.text = value;
+      [`comment`]: (value) => {
+        entry.comments.comment = value;
       },
       [`comment-emoji`]: (value) => {
-        entry.comments.emoji = this._emoji[value];
+        entry.comments.emotion = value;
       }
     };
   }
 
+  disableCommentsBlock(state) {
+    this._element.querySelector(`.film-details__add-emoji`).disabled = state;
+    this._element.querySelector(`.film-details__comment-input`).disabled = state;
+  }
+
+  disableRatingBlock(state) {
+    this._element.querySelectorAll(`.film-details__user-rating-input`).forEach((ratingInput) => {
+      ratingInput.disabled = state;
+    });
+  }
+
+  resetCommentsBlock() {
+    const emojiInputs = this._element.querySelectorAll(`[name="comment-emoji"]`);
+
+    emojiInputs.forEach((emojiInput) => {
+      emojiInput.checked = false;
+    });
+
+    document.querySelector(`.film-details__comment-input`).value = ``;
+  }
+
+  setErrorCommentLabel(state) {
+    this._element.querySelector(`.film-details__comment-input`).style.border = state ? `2px solid red` : ``;
+  }
+
+  setErrorRatingLabel(state) {
+    this._element.querySelectorAll(`.film-details__user-rating-label`).forEach((ratingLabel) => {
+      ratingLabel.style.backgroundColor = ``;
+    });
+    this._element.querySelector(`.film-details__user-rating-input:checked + label`).style.backgroundColor = state ? `red` : ``;
+  }
+
+  shake() {
+    const formElement = this._element.querySelector(`.film-details__inner`);
+    formElement.classList.add(`shake`);
+
+    setTimeout(() => {
+      formElement.classList.remove(`shake`);
+    }, 600);
+  }
+
   _processForm(formData) {
+    formData.delete(`score`);
     const entry = {
-      ownRating: null,
-      comments: {
-        emoji: null,
-        text: null,
-        author: `Me`,
-        createTimestamp: `3 days ago`
-      }
+      author: `Me`,
+      comment: null,
+      date: Date.now(),
+      emotion: null
     };
 
     const entryMapper = this._createMapper(entry);
@@ -250,17 +300,22 @@ export default class FilmCardPopup extends FilmAbstract {
 
   _onCommentKeydown(evt) {
     if ((evt.ctrlKey || evt.metaKey) && evt.code === keyCodes.ENTER) {
+      this.disableCommentsBlock(true);
+      this.setErrorCommentLabel(false);
       const formData = new FormData(this._element.querySelector(`.film-details__inner`));
       const entry = this._processForm(formData);
 
-      entry.comments.emoji = entry.comments.emoji ? entry.comments.emoji : this._emoji[`neutral-face`];
+      entry.emotion = entry.emotion ? entry.emotion : `neutral-face`;
 
-      this._comments.push(entry.comments);
-      this._ownRating = entry.ownRating;
+      this._comments.push(entry);
 
-      this._rerender();
-      this._onSubmitFormBinded();
+      this._onSubmitCommentFormBinded();
     }
+  }
+
+  updateData(newData) {
+    this._comments = [...newData.comments];
+    this._ownRating = newData.ownRating;
   }
 
   _bindListeners() {
