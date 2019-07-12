@@ -1,28 +1,13 @@
-import {getFilmCardData, filtersData} from './data';
+import {filtersData} from './data';
 import FilmCardPopup from './film-card-popup';
 import {clearHtmlBlock} from "./utility";
 import FilmCardExtra from "./film-card-extra";
 import FilmCardMain from "./film-card-main";
 import Filter from "./filter";
 import Statistic from "./statistic";
-import API from './api';
+import API from './backend/api';
 import FilmModel from "./film-model";
 const ApiClass = new API();
-
-const filmsCardsCount = {
-  USUAL: 7,
-  EXTRA: 2
-};
-
-const getFilmsCardsData = (cardsForRenderCount) => {
-  const cardsData = [];
-
-  for (let i = 0; i < cardsForRenderCount; i++) {
-    cardsData.push(getFilmCardData());
-  }
-
-  return cardsData;
-};
 
 const renderMainFilmCard = (defaultCardData) => {
   const CardMain = new FilmCardMain(defaultCardData);
@@ -153,7 +138,6 @@ const mainNavigationBlock = document.querySelector(`.main-navigation`);
 const filmsListContainerBlock = document.querySelector(`.films-list__container`);
 const filmsListsExtraBlocks = document.querySelectorAll(`.films-list--extra`);
 const titleElement = document.querySelector(`.films-list__title`);
-const mainFilmsCardsData = getFilmsCardsData(filmsCardsCount.USUAL);
 clearHtmlBlock(mainNavigationBlock);
 clearHtmlBlock(filmsListContainerBlock);
 clearHtmlBlock(filmsListsExtraBlocks[0]);

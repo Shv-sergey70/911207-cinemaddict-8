@@ -1,14 +1,8 @@
-import FilmModel from "./film-model";
-
-const Method = {
-  GET: `GET`,
-  POST: `POST`,
-  PUT: `PUT`,
-  DELETE: `DELETE`
-};
+import FilmModel from "../film-model";
+import {Method, StatusCode} from '../constants';
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status >= StatusCode.SUCCESS && response.status < StatusCode.REDIRECT) {
     return response;
   }
 

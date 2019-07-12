@@ -10,8 +10,9 @@
  * @property {String} _alternativeTitle
  */
 import FilmAbstract from "./film-abstract";
-import {keyCodes, EmojiDict, isFunction} from "./utility";
+import {isFunction} from "./utility";
 import moment from "moment";
+import {EmojiDict, KeyCode} from "./constants";
 
 const rates = {
   MIN: 1,
@@ -299,7 +300,7 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _onCommentKeydown(evt) {
-    if ((evt.ctrlKey || evt.metaKey) && evt.code === keyCodes.ENTER) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.code === KeyCode.ENTER) {
       this.disableCommentsBlock(true);
       this.setErrorCommentLabel(false);
       const formData = new FormData(this._element.querySelector(`.film-details__inner`));
