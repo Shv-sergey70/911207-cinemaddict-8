@@ -216,12 +216,10 @@ export default class FilmCardPopup extends FilmAbstract {
 
   _onRatingInputClick(evt) {
     if (evt.target.tagName.toLowerCase() === `input`) {
-      this.disableRatingBlock(true);
-      console.log('yeap');
       this.setErrorRatingLabel(false);
 
       this._ownRating = Number(evt.target.value);
-      // this._rerender();
+      this.disableRatingBlock(true);
       this._onSubmitRatingBinded();
     }
   }
@@ -229,10 +227,10 @@ export default class FilmCardPopup extends FilmAbstract {
   _createMapper(entry) {
     return {
       [`comment`]: (value) => {
-        entry.comments.comment = value;
+        entry.comment = value;
       },
       [`comment-emoji`]: (value) => {
-        entry.comments.emotion = value;
+        entry.emotion = value;
       }
     };
   }
@@ -289,6 +287,8 @@ export default class FilmCardPopup extends FilmAbstract {
 
     const entryMapper = this._createMapper(entry);
 
+    window.testVal = formData;
+
     for (let pair of formData.entries()) {
       let [property, value] = pair;
       if (entryMapper[property]) {
@@ -301,7 +301,6 @@ export default class FilmCardPopup extends FilmAbstract {
 
   _onCommentKeydown(evt) {
     if ((evt.ctrlKey || evt.metaKey) && evt.code === KeyCode.ENTER) {
-      this.disableCommentsBlock(true);
       this.setErrorCommentLabel(false);
       const formData = new FormData(this._element.querySelector(`.film-details__inner`));
       const entry = this._processForm(formData);
@@ -310,6 +309,7 @@ export default class FilmCardPopup extends FilmAbstract {
 
       this._comments.push(entry);
 
+      this.disableCommentsBlock(true);
       this._onSubmitCommentFormBinded();
     }
   }

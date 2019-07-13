@@ -60,20 +60,24 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
     Card.onMarkAsWatched = () => {
       Card.setState(`isWatched`, !Card.states.isWatched);
       Popup.setState(`isWatched`, Card.states.isWatched);
+      Card.addActiveClassForMarkAsWatched(Card.states.isWatched);
     };
     Card.onAddToWatchList = () => {
       Card.setState(`isInWatchList`, !Card.states.isInWatchList);
       Popup.setState(`isInWatchList`, Card.states.isInWatchList);
+      Card.addActiveClassForAddToWatchlist(Card.states.isInWatchList);
     };
   }
 
   Popup.onMarkAsWatched = () => {
     Popup.setState(`isWatched`, !Popup.states.isWatched);
     Card.setState(`isWatched`, Popup.states.isWatched);
+    Card.addActiveClassForMarkAsWatched(Popup.states.isWatched); // Не должно быть актуально для экстра-карточек!
   };
   Popup.onAddToWatchList = () => {
     Popup.setState(`isInWatchList`, !Popup.states.isInWatchList);
     Card.setState(`isInWatchList`, Popup.states.isInWatchList);
+    Card.addActiveClassForAddToWatchlist(Popup.states.isInWatchList); // Не должно быть актуально для экстра-карточек!
   };
 
   return Card.render();
