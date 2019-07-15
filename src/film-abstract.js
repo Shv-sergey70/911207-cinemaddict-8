@@ -33,6 +33,10 @@ export default class FilmAbstract extends Component {
     this._onMarkAsWatchedButtonClickBinded = this._onMarkAsWatchedButtonClick.bind(this);
   }
 
+  get id() {
+    return this._id;
+  }
+
   get states() {
     return this._states;
   }
@@ -53,10 +57,14 @@ export default class FilmAbstract extends Component {
     this._onMarkAsWatched = func;
   }
 
-  _onAddToWatchListButtonClick() {
+  _onAddToWatchListButtonClick(evt) {
+    evt.preventDefault();
+
     return typeof this._onAddToWatchList === `function` && this._onAddToWatchList();
   }
-  _onMarkAsWatchedButtonClick() {
+  _onMarkAsWatchedButtonClick(evt) {
+    evt.preventDefault();
+
     return typeof this._onMarkAsWatched === `function` && this._onMarkAsWatched();
   }
 

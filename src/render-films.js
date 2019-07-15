@@ -4,11 +4,17 @@ import FilmModel from "./film-model";
 import {ApiClass} from "./main";
 import FilmCardExtra from "./film-card-extra";
 import {clearHtmlBlock} from "./utility";
+import {getActiveFilterName, getFilterByName} from "./filters/render-filters";
 
 const FilmContainerBlock = {
   MAIN: document.querySelector(`.films-list .films-list__container`),
   TOP_RATED: document.querySelectorAll(`.films-list--extra .films-list__container`)[0],
   MOST_COMMENTED: document.querySelectorAll(`.films-list--extra .films-list__container`)[1],
+};
+
+const filmsStatesToFilterMapper = {
+  'isWatched': `History`,
+  'isInWatchList': `Watchlist`
 };
 
 const getFilmCardDomElements = (defaultCardData, FilmClass) => {
@@ -19,13 +25,13 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
     Popup.remove();
   };
   Popup.setOnCommentSubmitCallbackFunc = () => {
-    ApiClass.updateMovie({id: defaultCardData.id, data: FilmModel.toRaw(Popup)})
+    ApiClass.updateMovie({id: Popup.id, data: FilmModel.toRaw(Popup)})
       .then((updatedCardData) => {
         defaultCardData = updatedCardData;
         Popup.disableCommentsBlock(false);
         Popup.resetCommentsBlock();
         Card.updateCommentsCount(Popup._comments.length);
-        Popup._rerender();
+        Popup._rerender(); // TODO поправь приватность
       })
       .catch((error) => {
         console.error(`Can't update movie: ${error}`);
@@ -36,7 +42,7 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
       });
   };
   Popup.setOnRatingSubmitCallbackFunc = () => {
-    ApiClass.updateMovie({id: defaultCardData.id, data: FilmModel.toRaw(Popup)})
+    ApiClass.updateMovie({id: Popup.id, data: FilmModel.toRaw(Popup)})
       .then((updatedCardData) => {
         defaultCardData = updatedCardData;
         Popup.disableRatingBlock(false);
@@ -57,15 +63,49 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
   };
 
   if (Card instanceof FilmCard) {
-    Card.onMarkAsWatched = () => {
+    Card.onMarkAsWatched = () => { // TODO вынести общую логику нажатия на кнопку в функцию
       Card.setState(`isWatched`, !Card.states.isWatched);
-      Popup.setState(`isWatched`, Card.states.isWatched);
-      Card.addActiveClassForMarkAsWatched(Card.states.isWatched);
+      ApiClass.updateMovie({id: Card.id, data: FilmModel.toRaw(Card)})
+        .then((updatedCardData) => {
+          defaultCardData = updatedCardData;
+          Popup.setState(`isWatched`, Card.states.isWatched);
+          Card.addActiveClassForMarkAsWatched(Card.states.isWatched);
+
+          if (!Card.states.isWatched) {
+            getFilterByName(filmsStatesToFilterMapper[`isWatched`]).decrementFilmsCount();
+            if (getActiveFilterName() === `History`) {
+              Card.remove();
+            }
+          } else {
+            getFilterByName(filmsStatesToFilterMapper[`isWatched`]).incrementFilmsCount();
+          }
+        })
+      .catch((error) => {
+        console.error(`Can't update movie: ${error}`);
+        Card.setState(`isWatched`, !Card.states.isWatched);
+      });
     };
     Card.onAddToWatchList = () => {
       Card.setState(`isInWatchList`, !Card.states.isInWatchList);
-      Popup.setState(`isInWatchList`, Card.states.isInWatchList);
-      Card.addActiveClassForAddToWatchlist(Card.states.isInWatchList);
+      ApiClass.updateMovie({id: Card.id, data: FilmModel.toRaw(Card)})
+        .then((updatedCardData) => {
+          defaultCardData = updatedCardData;
+          Popup.setState(`isInWatchList`, Card.states.isInWatchList);
+          Card.addActiveClassForAddToWatchlist(Card.states.isInWatchList);
+
+          if (!Card.states.isInWatchList) {
+            getFilterByName(filmsStatesToFilterMapper[`isInWatchList`]).decrementFilmsCount();
+            if (getActiveFilterName() === `Watchlist`) {
+              Card.remove();
+            }
+          } else {
+            getFilterByName(filmsStatesToFilterMapper[`isInWatchList`]).incrementFilmsCount();
+          }
+        })
+        .catch((error) => {
+          console.error(`Can't update movie: ${error}`);
+          Card.setState(`isInWatchList`, !Card.states.isInWatchList);
+        });
     };
   }
 

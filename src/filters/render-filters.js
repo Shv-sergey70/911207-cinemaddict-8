@@ -32,11 +32,13 @@ const createFilters = () => {
 
   return filters;
 };
+export const getFilterByName = (filterName) => filters.filter((FilterComponent) => FilterComponent.name === filterName)[0];
 export const deactivateFilters = () => {
   filters.forEach((FilterComponent) => {
     FilterComponent.setActive(false);
   });
 };
+export const getActiveFilterName = () => filters.filter((FilterComponent) => FilterComponent.isActive())[0].name;
 
 
 const filters = createFilters();

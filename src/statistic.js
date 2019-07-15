@@ -25,7 +25,9 @@ export default class Statistic extends Component {
     this._onStatisticButtonClickCallbackFunc = func;
   }
 
-  _onStatisticButtonClick() {
+  _onStatisticButtonClick(evt) {
+    evt.preventDefault();
+
     return isFunction(this._onStatisticButtonClickCallbackFunc) && this._onStatisticButtonClickCallbackFunc();
   }
 

@@ -14,6 +14,10 @@ export default class Filter extends Component {
     this._filmsCount = value;
   }
 
+  isActive() {
+    return this._isActive === true;
+  }
+
   get name() {
     return this._name;
   }
@@ -30,6 +34,14 @@ export default class Filter extends Component {
     evt.preventDefault();
 
     return typeof this._onFilter === `function` && this._onFilter();
+  }
+
+  decrementFilmsCount() {
+    this._element.querySelector(`.main-navigation__item-count`).textContent--;
+  }
+
+  incrementFilmsCount() {
+    this._element.querySelector(`.main-navigation__item-count`).textContent++;
   }
 
   setActive(state) {

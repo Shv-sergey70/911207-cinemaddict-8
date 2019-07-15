@@ -3,16 +3,22 @@ import API from './backend/api';
 import {renderMainFilms, renderMostCommentedFilms, renderTopRatedFilms} from "./render-films";
 import {renderFilters} from "./filters/render-filters";
 import {renderStatistic} from "./render-statistic";
+import {showMainFilmsBlock} from "./utility";
 export const ApiClass = new API();
 
 const titleElement = document.querySelector(`.films-list__title`);
 
-titleElement.classList.remove(`visually-hidden`);
+const showLoadingMessage = (state, message = ``) => {
+  titleElement.classList.remove(`visually-hidden`);
+  titleElement.textContent = message;
+};
+
+showLoadingMessage(true, `Loading movies...`);
 ApiClass.getMovies()
   .then((filmsData) => {
-    titleElement.classList.add(`visually-hidden`);
+    showLoadingMessage(false);
     const StatisticClass = new Statistic(filmsData);
-    document.querySelector(`.films`).classList.remove(`visually-hidden`);
+    showMainFilmsBlock(true);
     renderFilters(filmsData, StatisticClass);
     renderStatistic(StatisticClass);
     renderMainFilms(filmsData);
@@ -21,5 +27,5 @@ ApiClass.getMovies()
   })
   .catch((error) => {
     console.error(`Caught an error: ${error}`);
-    titleElement.textContent = `Something went wrong while loading movies. Check your connection or try again later`;
+    showLoadingMessage(true, `Something went wrong while loading movies. Check your connection or try again later`);
   });
