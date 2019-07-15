@@ -1,44 +1,65 @@
 /**
  * @property {Array} _comments
  * @property {Object} _rates
- * @property {Object} _emoji
+ * @property {Object} _emojiDict
  * @property {String} _director
  * @property {String} _writers
  * @property {Array} _actors
- * @property {String} _country
+ * @property {String} _releaseCountry
  * @property {String} _ageRate
+ * @property {String} _alternativeTitle
  */
 import FilmAbstract from "./film-abstract";
-import {keyCodes} from "./utility";
+import {isFunction} from "./utility";
 import moment from "moment";
+import {EmojiDict, KeyCode} from "./constants";
+
+const rates = {
+  MIN: 1,
+  MAX: 10
+};
 
 export default class FilmCardPopup extends FilmAbstract {
   constructor(data) {
     super(data);
 
     ({
-      comments: this._comments,
-      rates: this._rates,
-      emoji: this._emoji,
+      comments: [...this._comments],
       director: this._director,
       writers: this._writers,
       actors: this._actors,
-      country: this._country,
-      ageRate: this._ageRate} = data);
+      releaseCountry: this._releaseCountry,
+      ageRate: this._ageRate,
+      ownRating: this._ownRating,
+      alternativeTitle: this._alternativeTitle} = data);
 
-    this._ownRating = null;
+    this._emojiDict = EmojiDict;
     this._onCloseButtonClickBinded = this._onCloseButtonClick.bind(this);
-    this._onSubmitFormBinded = this._onSubmitForm.bind(this);
+    this._onSubmitCommentFormBinded = this._onSubmitCommentForm.bind(this);
     this._onCommentKeydownBinded = this._onCommentKeydown.bind(this);
     this._onRatingInputClickBinded = this._onRatingInputClick.bind(this);
+    this._onSubmitRatingBinded = this._onSubmitRating.bind(this);
   }
 
   set setOnCloseButtonClickFunc(func) {
     this._onCloseButtonClickFunc = func;
   }
 
-  set setOnSubmitCallbackFunc(func) {
-    this._onSubmitCallbackFunc = func;
+  set setOnCommentSubmitCallbackFunc(func) {
+    this._onCommentSubmitCallbackFunc = func;
+  }
+
+  set setOnRatingSubmitCallbackFunc(func) {
+    this._onRatingSubmitCallbackFunc = func;
+  }
+
+  get _rates() {
+    const ratesArr = [];
+    for (let i = rates.MIN; i <= rates.MAX; i++) {
+      ratesArr.push(i);
+    }
+
+    return ratesArr;
   }
 
   get _template() {
@@ -52,14 +73,14 @@ export default class FilmCardPopup extends FilmAbstract {
       <div class="film-details__poster">
         <img class="film-details__poster-img" src="${this._poster}" alt="${this._title}">
 
-        <p class="film-details__age">${this._ageRate}</p>
+        <p class="film-details__age">${this._ageRate}+</p>
       </div>
 
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
             <h3 class="film-details__title">${this._title}</h3>
-            <p class="film-details__title-original">Original: Невероятная семейка</p>
+            <p class="film-details__title-original">${this._alternativeTitle}</p>
           </div>
 
           <div class="film-details__rating">
@@ -75,7 +96,7 @@ export default class FilmCardPopup extends FilmAbstract {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">${this._writers}</td>
+            <td class="film-details__cell">${this._writers.join(`, `)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
@@ -83,7 +104,7 @@ export default class FilmCardPopup extends FilmAbstract {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">${moment(this._releaseDate).format(`D MMMM YYYY`)} (${this._country})</td>
+            <td class="film-details__cell">${moment(this._releaseDate).format(`D MMMM YYYY`)} (${this._releaseCountry})</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
@@ -91,7 +112,7 @@ export default class FilmCardPopup extends FilmAbstract {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">${this._country}</td>
+            <td class="film-details__cell">${this._releaseCountry}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
@@ -115,7 +136,7 @@ export default class FilmCardPopup extends FilmAbstract {
         <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${this._states.isWatched ? `checked` : ``}>
       <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._states.isFavorite? `checked` : ``}>
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._states.isFavorite ? `checked` : ``}>
         <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
       </section>
   
@@ -125,12 +146,12 @@ export default class FilmCardPopup extends FilmAbstract {
       <ul class="film-details__comments-list">
         ${this._comments.map((comment) => `
         <li class="film-details__comment">
-          <span class="film-details__comment-emoji">${comment.emoji}</span>
+          <span class="film-details__comment-emoji">${this._emojiDict[comment.emotion]}</span>
           <div>
-            <p class="film-details__comment-text">${comment.text}</p>
+            <p class="film-details__comment-text">${comment.comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${moment(comment.dateAdded).fromNow()}</span>
+              <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
             </p>
           </div>
         </li>`.trim()).join(``)}
@@ -142,9 +163,9 @@ export default class FilmCardPopup extends FilmAbstract {
           <input type="checkbox" class="film-details__add-emoji visually-hidden" id="add-emoji">
 
           <div class="film-details__emoji-list">
-          ${Object.keys(this._emoji).map((emojiClass) => `
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiClass}" value="${emojiClass}">
-            <label class="film-details__emoji-label" for="emoji-${emojiClass}">${this._emoji[emojiClass]}</label>`).join(``)}          
+          ${Object.keys(this._emojiDict).map((emojiName) => `
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emojiName}" value="${emojiName}">
+            <label class="film-details__emoji-label" for="emoji-${emojiName}">${this._emojiDict[emojiName]}</label>`).join(``)}          
           </div>
         </div>
         <label class="film-details__comment-label">
@@ -182,46 +203,91 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _onCloseButtonClick() {
-    return typeof this._onCloseButtonClickFunc === `function` && this._onCloseButtonClickFunc();
+    return isFunction(this._onCloseButtonClickFunc) && this._onCloseButtonClickFunc();
   }
 
-  _onSubmitForm() {
-    return typeof this._onSubmitCallbackFunc === `function` && this._onSubmitCallbackFunc();
+  _onSubmitCommentForm() {
+    return isFunction(this._onCommentSubmitCallbackFunc) && this._onCommentSubmitCallbackFunc();
+  }
+
+  _onSubmitRating() {
+    return isFunction(this._onRatingSubmitCallbackFunc) && this._onRatingSubmitCallbackFunc();
   }
 
   _onRatingInputClick(evt) {
     if (evt.target.tagName.toLowerCase() === `input`) {
+      this.setErrorRatingLabel(false);
+
       this._ownRating = Number(evt.target.value);
-      this._rerender();
+      this.disableRatingBlock(true);
+      this._onSubmitRatingBinded();
     }
   }
 
   _createMapper(entry) {
     return {
-      score: (value) => {
-        entry.ownRating = Number(value);
-      },
-      comment: (value) => {
-        entry.comments.text = value;
+      [`comment`]: (value) => {
+        entry.comment = value;
       },
       [`comment-emoji`]: (value) => {
-        entry.comments.emoji = this._emoji[value];
+        entry.emotion = value;
       }
     };
   }
 
+  disableCommentsBlock(state) {
+    this._element.querySelector(`.film-details__add-emoji`).disabled = state;
+    this._element.querySelector(`.film-details__comment-input`).disabled = state;
+  }
+
+  disableRatingBlock(state) {
+    this._element.querySelectorAll(`.film-details__user-rating-input`).forEach((ratingInput) => {
+      ratingInput.disabled = state;
+    });
+  }
+
+  resetCommentsBlock() {
+    const emojiInputs = this._element.querySelectorAll(`[name="comment-emoji"]`);
+
+    emojiInputs.forEach((emojiInput) => {
+      emojiInput.checked = false;
+    });
+
+    document.querySelector(`.film-details__comment-input`).value = ``;
+  }
+
+  setErrorCommentLabel(state) {
+    this._element.querySelector(`.film-details__comment-input`).style.border = state ? `2px solid red` : ``;
+  }
+
+  setErrorRatingLabel(state) {
+    this._element.querySelectorAll(`.film-details__user-rating-label`).forEach((ratingLabel) => {
+      ratingLabel.style.backgroundColor = ``;
+    });
+    this._element.querySelector(`.film-details__user-rating-input:checked + label`).style.backgroundColor = state ? `red` : ``;
+  }
+
+  shake() {
+    const formElement = this._element.querySelector(`.film-details__inner`);
+    formElement.classList.add(`shake`);
+
+    setTimeout(() => {
+      formElement.classList.remove(`shake`);
+    }, 600);
+  }
+
   _processForm(formData) {
+    formData.delete(`score`);
     const entry = {
-      ownRating: null,
-      comments: {
-        emoji: null,
-        text: null,
-        author: `Me`,
-        dateAdded: `3 days ago`
-      }
+      author: `Me`,
+      comment: null,
+      date: Date.now(),
+      emotion: null
     };
 
     const entryMapper = this._createMapper(entry);
+
+    window.testVal = formData;
 
     for (let pair of formData.entries()) {
       let [property, value] = pair;
@@ -234,18 +300,23 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _onCommentKeydown(evt) {
-    if ((evt.ctrlKey || evt.metaKey) && evt.code === keyCodes.ENTER) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.code === KeyCode.ENTER) {
+      this.setErrorCommentLabel(false);
       const formData = new FormData(this._element.querySelector(`.film-details__inner`));
       const entry = this._processForm(formData);
 
-      entry.comments.emoji = entry.comments.emoji ? entry.comments.emoji : this._emoji[`neutral-face`];
+      entry.emotion = entry.emotion ? entry.emotion : `neutral-face`;
 
-      this._comments.push(entry.comments);
-      this._ownRating = entry.ownRating;
+      this._comments.push(entry);
 
-      this._rerender();
-      this._onSubmitFormBinded();
+      this.disableCommentsBlock(true);
+      this._onSubmitCommentFormBinded();
     }
+  }
+
+  updateData(newData) {
+    this._comments = [...newData.comments];
+    this._ownRating = newData.ownRating;
   }
 
   _bindListeners() {

@@ -34,7 +34,7 @@ export default class Component {
 
   _rerender() {
     this._unbindListeners();
-    this._element.innerHTML = this._template;
+    this._element.replaceWith(createDomElement(this._template));
     this._bindListeners();
   }
 }

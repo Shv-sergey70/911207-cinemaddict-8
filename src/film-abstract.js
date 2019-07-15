@@ -1,4 +1,5 @@
 /**
+ * @property {Number} _id
  * @property {String} _title
  * @property {Number} _rating
  * @property {Number} _releaseDate
@@ -7,6 +8,7 @@
  * @property {String} _description
  * @property {Array} _genres
  * @property {Object} _states
+ * @property {Number} _watchingDate
  */
 import Component from "./component";
 
@@ -15,6 +17,7 @@ export default class FilmAbstract extends Component {
     super();
 
     ({
+      id: this._id,
       title: this._title,
       rating: this._rating,
       releaseDate: this._releaseDate,
@@ -22,11 +25,16 @@ export default class FilmAbstract extends Component {
       poster: this._poster,
       description: this._description,
       genres: this._genres,
-      states: this._states
+      states: this._states,
+      watchingDate: this._watchingDate
     } = data);
 
     this._onAddToWatchListButtonClickBinded = this._onAddToWatchListButtonClick.bind(this);
     this._onMarkAsWatchedButtonClickBinded = this._onMarkAsWatchedButtonClick.bind(this);
+  }
+
+  get id() {
+    return this._id;
   }
 
   get states() {
@@ -49,10 +57,14 @@ export default class FilmAbstract extends Component {
     this._onMarkAsWatched = func;
   }
 
-  _onAddToWatchListButtonClick() {
+  _onAddToWatchListButtonClick(evt) {
+    evt.preventDefault();
+
     return typeof this._onAddToWatchList === `function` && this._onAddToWatchList();
   }
-  _onMarkAsWatchedButtonClick() {
+  _onMarkAsWatchedButtonClick(evt) {
+    evt.preventDefault();
+
     return typeof this._onMarkAsWatched === `function` && this._onMarkAsWatched();
   }
 

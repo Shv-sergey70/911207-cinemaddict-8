@@ -1,6 +1,7 @@
 import Component from "./component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import {isFunction} from "./utility";
 
 export default class Statistic extends Component {
   constructor(cardsData) {
@@ -12,20 +13,23 @@ export default class Statistic extends Component {
     this._actualGenres = null;
     this._filmsCountByGenre = null;
     this._totalDurationFormatted = null;
-    this._chart;
+    this._topGenre = null;
+    this._chart = null;
 
-    // this.onStatisticClick = this._onStatisticClick.bind(this);
+    this.onStatisticButtonClickBinded = this._onStatisticButtonClick.bind(this);
 
     this._update();
   }
 
-  // set onStatistic(func) {
-  //   this._onStatistic = func;
-  // }
+  set setOnStatisticButtonClickCallbackFunc(func) {
+    this._onStatisticButtonClickCallbackFunc = func;
+  }
 
-  // _onStatisticClick() {
-  //   return typeof this._onStatistic === `function` && this._onStatistic();
-  // }
+  _onStatisticButtonClick(evt) {
+    evt.preventDefault();
+
+    return isFunction(this._onStatisticButtonClickCallbackFunc) && this._onStatisticButtonClickCallbackFunc();
+  }
 
   _getTotalDurationFormatted() {
     const totalDuration = this._watchedFilmsCardsData.reduce((defaultValue, cardData) => {
@@ -66,6 +70,7 @@ export default class Statistic extends Component {
     this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched);
     this._actualGenres = this._getActualGenres();
     this._filmsCountByGenre = this._countFilmsByGenre();
+    this._topGenre = this._filmsCountByGenre.length !== 0 ? this._filmsCountByGenre[0].name : `none`;
     this._totalDurationFormatted = this._getTotalDurationFormatted();
   }
 
@@ -104,7 +109,7 @@ export default class Statistic extends Component {
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">${this._filmsCountByGenre[0].name}</p>
+        <p class="statistic__item-text">${this._topGenre}</p>
       </li>
     </ul>
 

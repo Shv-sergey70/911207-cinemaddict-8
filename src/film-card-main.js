@@ -21,11 +21,26 @@ export default class FilmCardMain extends FilmCardAbstract {
           <button class="film-card__comments">${this._commentsCount} comments</button>
 
           <form class="film-card__controls">
-            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
-            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched"><!--Mark as watched-->WTCHD</button>
-            <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
-          </form>
-        </article>`.trim();
+            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${this.states.isInWatchList ? `film-card__controls-item--active` : ``}"><!--Add to watchlist--> WL</button>
+            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${this.states.isWatched ? `film-card__controls-item--active` : ``}"><!--Mark as watched-->WTCHD</button>
+              <button class="film-card__controls-item button film-card__controls-item--favorite ${this.states.isFavorite ? `film-card__controls-item--active` : ``}"><!--Mark as favorite-->FAV</button>
+              </form>
+            </article>`.trim();
+  }
+
+  addActiveClassForAddToWatchlist(state) {
+    if (state) {
+      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.add(`film-card__controls-item--active`);
+    } else {
+      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.remove(`film-card__controls-item--active`);
+    }
+  }
+  addActiveClassForMarkAsWatched(state) {
+    if (state) {
+      this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.add(`film-card__controls-item--active`);
+    } else {
+      this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.remove(`film-card__controls-item--active`);
+    }
   }
 
   _bindListeners() {
