@@ -12,3 +12,11 @@ export const createDomElement = (template) => {
 };
 
 export const isFunction = (func) => typeof func === `function`;
+
+export const showMainFilmsBlock = (state) => {
+  if (state) {
+    document.querySelector(`.films`).classList.remove(`visually-hidden`);
+  } else {
+    document.querySelector(`.films`).classList.add(`visually-hidden`);
+  }
+};

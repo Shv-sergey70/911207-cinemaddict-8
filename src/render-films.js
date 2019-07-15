@@ -94,7 +94,6 @@ const getFilmsCardsDomElements = (cardsData, FilmClass) => {
 };
 
 export const renderMainFilms = (cardsData) => {
-  console.log(cardsData);
   clearHtmlBlock(FilmContainerBlock.MAIN);
   FilmContainerBlock.MAIN.appendChild(getFilmsCardsDomElements(cardsData, FilmCard));
 };

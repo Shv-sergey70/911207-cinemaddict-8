@@ -1,6 +1,7 @@
 import Component from "./component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import {isFunction} from "./utility";
 
 export default class Statistic extends Component {
   constructor(cardsData) {
@@ -15,18 +16,18 @@ export default class Statistic extends Component {
     this._topGenre = null;
     this._chart = null;
 
-    // this.onStatisticClick = this._onStatisticClick.bind(this);
+    this.onStatisticButtonClickBinded = this._onStatisticButtonClick.bind(this);
 
     this._update();
   }
 
-  // set onStatistic(func) {
-  //   this._onStatistic = func;
-  // }
+  set setOnStatisticButtonClickCallbackFunc(func) {
+    this._onStatisticButtonClickCallbackFunc = func;
+  }
 
-  // _onStatisticClick() {
-  //   return typeof this._onStatistic === `function` && this._onStatistic();
-  // }
+  _onStatisticButtonClick() {
+    return isFunction(this._onStatisticButtonClickCallbackFunc) && this._onStatisticButtonClickCallbackFunc();
+  }
 
   _getTotalDurationFormatted() {
     const totalDuration = this._watchedFilmsCardsData.reduce((defaultValue, cardData) => {
@@ -67,7 +68,7 @@ export default class Statistic extends Component {
     this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched);
     this._actualGenres = this._getActualGenres();
     this._filmsCountByGenre = this._countFilmsByGenre();
-    this._topGenre = this._filmsCountByGenre.length !== 0 ? this._filmsCountByGenre[0].name : 'none';
+    this._topGenre = this._filmsCountByGenre.length !== 0 ? this._filmsCountByGenre[0].name : `none`;
     this._totalDurationFormatted = this._getTotalDurationFormatted();
   }
 

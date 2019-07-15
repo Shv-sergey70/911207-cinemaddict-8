@@ -1,33 +1,15 @@
-import {getRandomIntegerInRange} from "./utility";
-
 export const filtersData = [
   {
     name: `All movies`,
-    id: `all`,
-    isChecked: true
+    isActive: true
   },
   {
-    name: `Watchlist`,
-    id: `watchlist`,
-    isChecked: false,
-    filmsCount: getRandomIntegerInRange(1, 100)
+    name: `Watchlist`
   },
   {
-    name: `History`,
-    id: `history`,
-    isChecked: false,
-    filmsCount: getRandomIntegerInRange(1, 100)
+    name: `History`
   },
   {
-    name: `Favorites`,
-    id: `favorites`,
-    isChecked: false,
-    filmsCount: getRandomIntegerInRange(1, 100)
-  },
-  {
-    name: `Stats`,
-    id: `stats`,
-    isChecked: false,
-    isAdditional: true
+    name: `Favorites`
   }
 ];
