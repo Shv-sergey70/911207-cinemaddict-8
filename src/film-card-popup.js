@@ -85,7 +85,7 @@ export default class FilmCardPopup extends FilmAbstract {
 
           <div class="film-details__rating">
             <p class="film-details__total-rating">${this._rating}</p>
-            <p class="film-details__user-rating">${this._ownRating === null ? `` : `Your rate ${this._ownRating}`}</p>
+            <p class="film-details__user-rating">${this._ownRating === null ? `` : `Your rate <span>${this._ownRating}</span>`}</p>
           </div>
         </div>
 
@@ -144,17 +144,7 @@ export default class FilmCardPopup extends FilmAbstract {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${this._comments.length}</span></h3>
 
       <ul class="film-details__comments-list">
-        ${this._comments.map((comment) => `
-        <li class="film-details__comment">
-          <span class="film-details__comment-emoji">${this._emojiDict[comment.emotion]}</span>
-          <div>
-            <p class="film-details__comment-text">${comment.comment}</p>
-            <p class="film-details__comment-info">
-              <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
-            </p>
-          </div>
-        </li>`.trim()).join(``)}
+        ${this._renderComments(this._comments)}
       </ul>
 
       <div class="film-details__new-comment">
@@ -202,16 +192,34 @@ export default class FilmCardPopup extends FilmAbstract {
 </section>`.trim();
   }
 
+  _commentTemplate(comment) {
+    return `
+        <li class="film-details__comment">
+          <span class="film-details__comment-emoji">${this._emojiDict[comment.emotion]}</span>
+          <div>
+            <p class="film-details__comment-text">${comment.comment}</p>
+              <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${comment.author}</span>
+              <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
+            </p>
+          </div>
+      </li>`.trim();
+  }
+
+  _renderComments(commentsData) {
+    return commentsData.map((comment) => this._commentTemplate(comment)).join(``);
+  }
+
   _onCloseButtonClick() {
     return isFunction(this._onCloseButtonClickFunc) && this._onCloseButtonClickFunc();
   }
 
   _onSubmitCommentForm() {
-    return isFunction(this._onCommentSubmitCallbackFunc) && this._onCommentSubmitCallbackFunc();
+    return isFunction(this._onCommentSubmitCallbackFunc) && this._onCommentSubmitCallbackFunc(this._comments);
   }
 
   _onSubmitRating() {
-    return isFunction(this._onRatingSubmitCallbackFunc) && this._onRatingSubmitCallbackFunc();
+    return isFunction(this._onRatingSubmitCallbackFunc) && this._onRatingSubmitCallbackFunc(this._ownRating);
   }
 
   _onRatingInputClick(evt) {
@@ -315,8 +323,21 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   updateData(newData) {
+    this._states = {
+      isInWatchList: newData.states.isInWatchList,
+      isWatched: newData.states.isWatched,
+      isFavorite: newData.states.isFavorite
+    };
     this._comments = [...newData.comments];
     this._ownRating = newData.ownRating;
+  }
+
+  updateRatingView() {
+    this._element.querySelector(`.film-details__user-rating span`).textContent = this._ownRating;
+  }
+
+  updateCommentsView() {
+    this._element.querySelector(`.film-details__comments-list`).innerHTML = this._renderComments(this._comments);
   }
 
   _bindListeners() {

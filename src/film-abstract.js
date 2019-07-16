@@ -75,4 +75,12 @@ export default class FilmAbstract extends Component {
   _unbindListeners() {
     this._element.querySelector(`.film-card__comments`).removeEventListener(`click`, this._onCommentsButtonClickBinded);
   }
+
+  updateData(data) {
+    this._states = {
+      isInWatchList: data.states.isInWatchList,
+      isWatched: data.states.isWatched,
+      isFavorite: data.states.isFavorite
+    };
+  }
 }

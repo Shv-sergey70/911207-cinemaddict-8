@@ -24,16 +24,33 @@ export default class FilmModel {
     this.watchingTimestamp = data[`user_details`][`watching_date`];
   }
 
-  static toRaw(Film) {
+  toRaw() {
     return {
-      'id': Film._id,
-      'comments': Film._comments,
+      'id': this.id,
+      'film_info': {
+        'title': this.title,
+        'alternative_title': this.alternativeTitle,
+        'description': this.description,
+        'poster': this.poster,
+        'runtime': this.duration,
+        'actors': this.actors,
+        'genre': this.genres,
+        'age_rating': this.ageRate,
+        'director': this.director,
+        'writers': this.writers,
+        'total_rating': this.rating,
+        'release': {
+          'date': this.releaseDate,
+          'release_country': this.releaseCountry
+        }
+      },
+      'comments': this.comments,
       'user_details': {
-        'watchlist': Film.states.isInWatchList,
-        'already_watched': Film.states.isWatched,
-        'favorite': Film.states.isFavorite,
-        'personal_rating': Film._ownRating,
-        'watching_date': Film._watchingTimestamp
+        'watchlist': this.states.isInWatchList,
+        'already_watched': this.states.isWatched,
+        'favorite': this.states.isFavorite,
+        'personal_rating': this.ownRating,
+        'watching_date': this.watchingTimestamp
       }
     };
   }
@@ -43,6 +60,7 @@ export default class FilmModel {
   }
 
   static parseFilms(filmsData) {
+    console.log();
     return filmsData.map(FilmModel.parseFilm);
   }
 }
