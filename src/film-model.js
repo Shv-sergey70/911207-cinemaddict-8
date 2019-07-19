@@ -60,7 +60,6 @@ export default class FilmModel {
   }
 
   static parseFilms(filmsData) {
-    console.log();
     return filmsData.map(FilmModel.parseFilm);
   }
 }

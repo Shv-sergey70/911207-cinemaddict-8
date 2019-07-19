@@ -41,8 +41,6 @@ export default class Provider {
           return filmData;
         });
     } else {
-      // console.log(id);
-      // console.log(data);
       this._store.setItem({key: id, value: data});
 
       return Promise.resolve(FilmModel.parseFilm(data));

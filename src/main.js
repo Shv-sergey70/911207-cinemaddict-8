@@ -34,8 +34,8 @@ ProviderComponent.getMovies()
     renderFilters(filmsData, StatisticClass);
     renderStatistic(StatisticClass);
     renderMainFilms(filmsData);
-    renderTopRatedFilms(filmsData);
-    renderMostCommentedFilms(filmsData);
+    renderTopRatedFilms(filmsData); // TODO синхронизовать стейт одинаковых карточек тут и в главной галерее фильмов
+    renderMostCommentedFilms(filmsData); // TODO то же что и выше
   })
   .catch((error) => {
     console.error(`Caught an error: ${error}`);
