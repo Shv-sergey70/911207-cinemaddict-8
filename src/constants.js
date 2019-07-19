@@ -19,3 +19,5 @@ export const StatusCode = {
   SUCCESS: 200,
   REDIRECT: 300
 };
+
+export const FILMS_STORE_KEY = `films-data`;

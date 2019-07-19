@@ -1,7 +1,7 @@
 import FilmCard from "./film-card-main";
 import FilmCardPopup from "./film-card-popup";
 import FilmModel from "./film-model";
-import {ApiClass} from "./main";
+import {ApiClass, ProviderComponent} from "./main";
 import FilmCardExtra from "./film-card-extra";
 import {clearHtmlBlock} from "./utility";
 import {getActiveFilterName, getFilterByName} from "./filters/render-filters";
@@ -24,32 +24,38 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
   Popup.setOnCloseButtonClickFunc = () => {
     Popup.remove();
   };
-  Popup.setOnCommentSubmitCallbackFunc = () => {
-    ApiClass.updateMovie({id: Popup.id, data: FilmModel.toRaw(Popup)})
+  Popup.setOnCommentSubmitCallbackFunc = (newComments) => {
+    const oldComments = defaultCardData.comments;
+    defaultCardData.comments = newComments;
+    ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
       .then((updatedCardData) => {
         defaultCardData = updatedCardData;
         Popup.disableCommentsBlock(false);
         Popup.resetCommentsBlock();
-        Card.updateCommentsCount(Popup._comments.length);
-        Popup._rerender(); // TODO поправь приватность
+        Card.updateCommentsCount(defaultCardData.comments.length);
+        Popup.updateCommentsView();
       })
       .catch((error) => {
         console.error(`Can't update movie: ${error}`);
+        defaultCardData.comments = oldComments;
         Popup.setErrorCommentLabel(true);
         Popup.shake();
         Popup.disableCommentsBlock(false);
         Popup.updateData(defaultCardData);
       });
   };
-  Popup.setOnRatingSubmitCallbackFunc = () => {
-    ApiClass.updateMovie({id: Popup.id, data: FilmModel.toRaw(Popup)})
+  Popup.setOnRatingSubmitCallbackFunc = (newRating) => {
+    const oldRating = defaultCardData.ownRating;
+    defaultCardData.ownRating = newRating;
+    ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
       .then((updatedCardData) => {
         defaultCardData = updatedCardData;
         Popup.disableRatingBlock(false);
-        Popup._rerender();
+        Popup.updateRatingView();
       })
       .catch((error) => {
         console.error(`Can't update movie: ${error}`);
+        defaultCardData.ownRating = oldRating;
         Popup.disableRatingBlock(false);
         Popup.setErrorRatingLabel(true);
         Popup.shake();
@@ -62,13 +68,14 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
     body.appendChild(Popup.render());
   };
 
-  if (Card instanceof FilmCard) {
+  if (Card instanceof FilmCard) { // TODO придумать альтернативу instanceof;
     Card.onMarkAsWatched = () => { // TODO вынести общую логику нажатия на кнопку в функцию
-      Card.setState(`isWatched`, !Card.states.isWatched);
-      ApiClass.updateMovie({id: Card.id, data: FilmModel.toRaw(Card)})
+      defaultCardData.states.isWatched = !defaultCardData.states.isWatched;
+      ProviderComponent.updateMovie({id: Card.id, data: defaultCardData.toRaw()})
         .then((updatedCardData) => {
           defaultCardData = updatedCardData;
-          Popup.setState(`isWatched`, Card.states.isWatched);
+          Card.updateData(defaultCardData);
+          Popup.updateData(defaultCardData);
           Card.addActiveClassForMarkAsWatched(Card.states.isWatched);
 
           if (!Card.states.isWatched) {
@@ -82,15 +89,16 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
         })
       .catch((error) => {
         console.error(`Can't update movie: ${error}`);
-        Card.setState(`isWatched`, !Card.states.isWatched);
+        defaultCardData.states.isWatched = !defaultCardData.states.isWatched;
       });
     };
     Card.onAddToWatchList = () => {
-      Card.setState(`isInWatchList`, !Card.states.isInWatchList);
-      ApiClass.updateMovie({id: Card.id, data: FilmModel.toRaw(Card)})
+      defaultCardData.states.isInWatchList = !defaultCardData.states.isInWatchList;
+      ProviderComponent.updateMovie({id: Card.id, data: defaultCardData.toRaw()})
         .then((updatedCardData) => {
           defaultCardData = updatedCardData;
-          Popup.setState(`isInWatchList`, Card.states.isInWatchList);
+          Card.updateData(defaultCardData);
+          Popup.updateData(defaultCardData);
           Card.addActiveClassForAddToWatchlist(Card.states.isInWatchList);
 
           if (!Card.states.isInWatchList) {
@@ -104,7 +112,7 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
         })
         .catch((error) => {
           console.error(`Can't update movie: ${error}`);
-          Card.setState(`isInWatchList`, !Card.states.isInWatchList);
+          defaultCardData.states.isInWatchList = !defaultCardData.states.isInWatchList;
         });
     };
   }
