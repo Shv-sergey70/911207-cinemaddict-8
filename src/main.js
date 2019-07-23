@@ -20,6 +20,10 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += `[OFFLINE]`;
 });
+
+navigator.serviceWorker.register(`./service-worker.js`)
+  .catch((error) => console.log(`FAILED registration of SW: ${error}`));
+
 const showLoadingMessage = (state, message = ``) => {
   titleElement.classList.remove(`visually-hidden`);
   titleElement.textContent = message;
