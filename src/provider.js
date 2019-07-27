@@ -9,10 +9,19 @@ export default class Provider {
   constructor({api, store}) {
     this._api = api;
     this._store = store;
+    this._needSync = false;
   }
 
   _isOnline() {
     return window.navigator.onLine;
+  }
+
+  isNeedSync() {
+    return this._needSync;
+  }
+
+  syncMovies(rawMovies) {
+    return this._api.syncMovies(Object.values(rawMovies));
   }
 
   getMovies() {
@@ -41,6 +50,7 @@ export default class Provider {
           return filmData;
         });
     } else {
+      this._needSync = true;
       this._store.setItem({key: id, value: data});
 
       return Promise.resolve(FilmModel.parseFilm(data));
