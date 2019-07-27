@@ -15,11 +15,19 @@ const titleElement = document.querySelector(`.films-list__title`);
 
 window.addEventListener(`online`, () => {
   document.title = document.title.split(`[OFFLINE]`)[0];
+
+  if (ProviderComponent.isNeedSync()) {
+    ProviderComponent.syncMovies(StoreComponent.getAll());
+  }
 });
 
 window.addEventListener(`offline`, () => {
   document.title += `[OFFLINE]`;
 });
+
+navigator.serviceWorker.register(`./service-worker.js`)
+  .catch((error) => console.log(`FAILED registration of SW: ${error}`));
+
 const showLoadingMessage = (state, message = ``) => {
   titleElement.classList.remove(`visually-hidden`);
   titleElement.textContent = message;
