@@ -337,6 +337,7 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   updateCommentsView() {
+    this._element.querySelector(`.film-details__comments-count`).textContent = this._comments.length;
     this._element.querySelector(`.film-details__comments-list`).innerHTML = this._renderComments(this._comments);
   }
 

@@ -7,6 +7,7 @@ import {showMainFilmsBlock} from "./utility";
 import Store from "./store";
 import Provider from "./provider";
 import {FILMS_STORE_KEY} from "./constants";
+import {renderSearch} from "./render-search";
 export const ApiClass = new API();
 
 const StoreComponent = new Store({storageKey: FILMS_STORE_KEY, storage: localStorage});
@@ -34,6 +35,7 @@ ProviderComponent.getMovies()
     renderFilters(filmsData, StatisticClass);
     renderStatistic(StatisticClass);
     renderMainFilms(filmsData);
+    renderSearch(filmsData);
     renderTopRatedFilms(filmsData); // TODO синхронизовать стейт одинаковых карточек тут и в главной галерее фильмов
     renderMostCommentedFilms(filmsData); // TODO то же что и выше
   })
