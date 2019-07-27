@@ -38,6 +38,16 @@ export default class API {
       .then(FilmModel.parseFilm);
   }
 
+  syncMovies(movies) {
+    return this._load({
+      url: `movies/sync`,
+      method: Method.POST,
+      body: JSON.stringify(movies),
+      headers: new Headers({'Content-type': `application/json`})
+    })
+      .then(toJSON);
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 

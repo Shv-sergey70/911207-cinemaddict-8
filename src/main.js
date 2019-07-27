@@ -15,6 +15,10 @@ const titleElement = document.querySelector(`.films-list__title`);
 
 window.addEventListener(`online`, () => {
   document.title = document.title.split(`[OFFLINE]`)[0];
+
+  if (ProviderComponent.isNeedSync()) {
+    ProviderComponent.syncMovies(StoreComponent.getAll());
+  }
 });
 
 window.addEventListener(`offline`, () => {
