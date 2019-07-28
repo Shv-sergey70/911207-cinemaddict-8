@@ -20,3 +20,7 @@ export const showMainFilmsBlock = (state) => {
     document.querySelector(`.films`).classList.add(`visually-hidden`);
   }
 };
+
+export const Keys = {
+  ESC: `Escape`
+};

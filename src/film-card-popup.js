@@ -10,7 +10,7 @@
  * @property {String} _alternativeTitle
  */
 import FilmAbstract from "./film-abstract";
-import {isFunction} from "./utility";
+import {isFunction, Keys} from "./utility";
 import moment from "moment";
 import {EmojiDict, KeyCode} from "./constants";
 
@@ -35,10 +35,12 @@ export default class FilmCardPopup extends FilmAbstract {
 
     this._emojiDict = EmojiDict;
     this._onCloseButtonClickBinded = this._onCloseButtonClick.bind(this);
+    this._onEscKeydownBinded = this._onEscKeydown.bind(this);
     this._onSubmitCommentFormBinded = this._onSubmitCommentForm.bind(this);
     this._onCommentKeydownBinded = this._onCommentKeydown.bind(this);
     this._onRatingInputClickBinded = this._onRatingInputClick.bind(this);
     this._onSubmitRatingBinded = this._onSubmitRating.bind(this);
+    this._onUndoButtonClickBinded = this._onUndoButtonClick.bind(this);
   }
 
   set setOnCloseButtonClickFunc(func) {
@@ -51,6 +53,10 @@ export default class FilmCardPopup extends FilmAbstract {
 
   set setOnRatingSubmitCallbackFunc(func) {
     this._onRatingSubmitCallbackFunc = func;
+  }
+
+  set setOnUndoButtonClickFunc(func) {
+    this._onUndoButtonClickFunc = func;
   }
 
   get _rates() {
@@ -166,8 +172,8 @@ export default class FilmCardPopup extends FilmAbstract {
 
     <section class="film-details__user-rating-wrap">
       <div class="film-details__user-rating-controls">
-        <span class="film-details__watched-status film-details__watched-status--active">Already watched</span>
-        <button class="film-details__watched-reset" type="button">undo</button>
+        <span class="film-details__watched-status film-details__watched-status--active"></span>
+        <button class="film-details__watched-reset visually-hidden" type="button">undo</button>
       </div>
 
       <div class="film-details__user-score">
@@ -211,6 +217,16 @@ export default class FilmCardPopup extends FilmAbstract {
     this._element.querySelector(`#watchlist`).checked = this.states.isInWatchList;
   }
 
+  _showUndoButton() {
+    this._element.querySelector(`.film-details__watched-status`).textContent = `Comment added`;
+    this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
+  }
+
+  _hideUndoButton() {
+    this._element.querySelector(`.film-details__watched-status`).textContent = `Comment deleted`;
+    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
+  }
+
   _renderComments(commentsData) {
     return commentsData.map((comment) => this._commentTemplate(comment)).join(``);
   }
@@ -219,12 +235,25 @@ export default class FilmCardPopup extends FilmAbstract {
     return isFunction(this._onCloseButtonClickFunc) && this._onCloseButtonClickFunc();
   }
 
+  _onUndoButtonClick() {
+    this._element.querySelector(`.film-details__watched-reset`).removeEventListener(`click`, this._onUndoButtonClickBinded);
+    this._hideUndoButton();
+
+    return isFunction(this._onUndoButtonClickFunc) && this._onUndoButtonClickFunc(this._comments);
+  }
+
   _onSubmitCommentForm() {
     return isFunction(this._onCommentSubmitCallbackFunc) && this._onCommentSubmitCallbackFunc(this._comments);
   }
 
   _onSubmitRating() {
     return isFunction(this._onRatingSubmitCallbackFunc) && this._onRatingSubmitCallbackFunc(this._ownRating);
+  }
+
+  _onEscKeydown(evtKeydown) {
+    if (evtKeydown.key === Keys.ESC) {
+      this._element.remove();
+    }
   }
 
   _onRatingInputClick(evt) {
@@ -323,6 +352,8 @@ export default class FilmCardPopup extends FilmAbstract {
       this._comments.push(entry);
 
       this.disableCommentsBlock(true);
+      this._element.querySelector(`.film-details__watched-reset`).addEventListener(`click`, this._onUndoButtonClickBinded);
+      this._showUndoButton();
       this._onSubmitCommentFormBinded();
     }
   }
@@ -347,6 +378,7 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _bindListeners() {
+    document.addEventListener(`keydown`, this._onEscKeydownBinded);
     this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).addEventListener(`keydown`, this._onCommentKeydownBinded);
     this._element.querySelector(`.film-details__user-rating-score`).addEventListener(`click`, this._onRatingInputClickBinded);
@@ -355,6 +387,7 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _unbindListeners() {
+    document.removeEventListener(`keydown`, this._onEscKeydownBinded);
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).removeEventListener(`keydown`, this._onCommentKeydownBinded);
     this._element.querySelector(`.film-details__user-rating-score`).removeEventListener(`click`, this._onRatingInputClickBinded);

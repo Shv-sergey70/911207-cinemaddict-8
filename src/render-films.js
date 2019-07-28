@@ -23,6 +23,23 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
   Popup.setOnCloseButtonClickFunc = () => {
     Popup.remove();
   };
+  Popup.setOnUndoButtonClickFunc = (newComments) => {
+    newComments.pop();
+    const oldComments = defaultCardData.comments;
+    defaultCardData.comments = newComments;
+    ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
+      .then((updatedCardData) => {
+        defaultCardData = updatedCardData;
+        Popup.resetCommentsBlock();
+        Card.updateCommentsCount(defaultCardData.comments.length);
+        Popup.updateCommentsView();
+      })
+      .catch(() => {
+        defaultCardData.comments = oldComments;
+        Popup.shake();
+        Popup.updateData(defaultCardData);
+      });
+  };
   Popup.setOnCommentSubmitCallbackFunc = (newComments) => {
     const oldComments = defaultCardData.comments;
     defaultCardData.comments = newComments;
