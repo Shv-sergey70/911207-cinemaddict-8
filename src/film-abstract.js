@@ -11,6 +11,7 @@
  * @property {Number} _watchingDate
  */
 import Component from "./component";
+import {isFunction} from "./utility";
 
 export default class FilmAbstract extends Component {
   constructor(data) {
@@ -60,12 +61,12 @@ export default class FilmAbstract extends Component {
   _onAddToWatchListButtonClick(evt) {
     evt.preventDefault();
 
-    return typeof this._onAddToWatchList === `function` && this._onAddToWatchList();
+    return isFunction(this._onAddToWatchList) && this._onAddToWatchList();
   }
   _onMarkAsWatchedButtonClick(evt) {
     evt.preventDefault();
 
-    return typeof this._onMarkAsWatched === `function` && this._onMarkAsWatched();
+    return isFunction(this._onMarkAsWatched) && this._onMarkAsWatched();
   }
 
   _bindListeners() {

@@ -206,6 +206,11 @@ export default class FilmCardPopup extends FilmAbstract {
       </li>`.trim();
   }
 
+  updateFilmsControlButtons() {
+    this._element.querySelector(`#watched`).checked = this.states.isWatched;
+    this._element.querySelector(`#watchlist`).checked = this.states.isInWatchList;
+  }
+
   _renderComments(commentsData) {
     return commentsData.map((comment) => this._commentTemplate(comment)).join(``);
   }

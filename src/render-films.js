@@ -1,7 +1,6 @@
 import FilmCard from "./film-card-main";
 import FilmCardPopup from "./film-card-popup";
-import FilmModel from "./film-model";
-import {ApiClass, ProviderComponent} from "./main";
+import {ProviderComponent} from "./main";
 import FilmCardExtra from "./film-card-extra";
 import {clearHtmlBlock} from "./utility";
 import {getActiveFilterName, getFilterByName} from "./filters/render-filters";
@@ -119,11 +118,13 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
 
   Popup.onMarkAsWatched = () => {
     Popup.setState(`isWatched`, !Popup.states.isWatched);
+    Popup.updateFilmsControlButtons();
     Card.setState(`isWatched`, Popup.states.isWatched);
     Card.addActiveClassForMarkAsWatched(Popup.states.isWatched); // Не должно быть актуально для экстра-карточек!
   };
   Popup.onAddToWatchList = () => {
     Popup.setState(`isInWatchList`, !Popup.states.isInWatchList);
+    Popup.updateFilmsControlButtons();
     Card.setState(`isInWatchList`, Popup.states.isInWatchList);
     Card.addActiveClassForAddToWatchlist(Popup.states.isInWatchList); // Не должно быть актуально для экстра-карточек!
   };
