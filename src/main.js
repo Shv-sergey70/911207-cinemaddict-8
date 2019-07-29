@@ -1,6 +1,11 @@
 import Statistic from "./statistic";
 import API from './backend/api';
-import {renderMainFilms, renderMostCommentedFilms, renderTopRatedFilms} from "./render-films";
+import {
+  renderMainFilms,
+  renderMostCommentedFilms,
+  renderTopRatedFilms,
+  renderUserRank
+} from "./render-films";
 import {renderFilters} from "./filters/render-filters";
 import {renderStatistic} from "./render-statistic";
 import {showMainFilmsBlock} from "./utility";
@@ -46,6 +51,7 @@ ProviderComponent.getMovies()
     renderSearch(filmsData);
     renderTopRatedFilms(filmsData); // TODO синхронизовать стейт одинаковых карточек тут и в главной галерее фильмов
     renderMostCommentedFilms(filmsData); // TODO то же что и выше
+    renderUserRank(filmsData);
   })
   .catch((error) => {
     console.error(`Caught an error: ${error}`);

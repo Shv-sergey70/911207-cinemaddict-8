@@ -28,15 +28,14 @@ export default class FilmCardMain extends FilmCardAbstract {
             </article>`.trim();
   }
 
-  addActiveClassForAddToWatchlist(state) {
-    if (state) {
+  updateFilmsControlButtons() {
+    if (this.states.isInWatchList) {
       this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.add(`film-card__controls-item--active`);
     } else {
       this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.remove(`film-card__controls-item--active`);
     }
-  }
-  addActiveClassForMarkAsWatched(state) {
-    if (state) {
+
+    if (this.states.isWatched) {
       this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.add(`film-card__controls-item--active`);
     } else {
       this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.remove(`film-card__controls-item--active`);

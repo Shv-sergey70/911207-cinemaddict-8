@@ -16,7 +16,30 @@ const filmsStatesToFilterMapper = {
   'isInWatchList': `Watchlist`
 };
 
-const getFilmCardDomElements = (defaultCardData, FilmClass) => {
+export const renderUserRank = (allCardsData) => {
+  const watchedFilmsCount = allCardsData.filter((cardData) => cardData.states.isWatched).length
+  const profileRatingBlock = document.querySelector(`.profile__rating`);
+  let ratingStatus = ``;
+
+  switch (true) {
+    case watchedFilmsCount >= 21:
+      ratingStatus = `Movie buff`;
+
+      break;
+    case watchedFilmsCount >= 11:
+      ratingStatus = `Fan`;
+
+      break;
+    case watchedFilmsCount >= 1:
+      ratingStatus = `Novice`;
+
+      break;
+  }
+
+  profileRatingBlock.textContent = ratingStatus;
+};
+
+const getFilmCardDomElements = (allCardsData, defaultCardData, FilmClass) => {
   const Card = new FilmClass(defaultCardData);
   const Popup = new FilmCardPopup(defaultCardData);
 
@@ -89,10 +112,11 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
       defaultCardData.states.isWatched = !defaultCardData.states.isWatched;
       ProviderComponent.updateMovie({id: Card.id, data: defaultCardData.toRaw()})
         .then((updatedCardData) => {
-          defaultCardData = updatedCardData;
+          defaultCardData.states = updatedCardData.states;
           Card.updateData(defaultCardData);
           Popup.updateData(defaultCardData);
-          Card.addActiveClassForMarkAsWatched(Card.states.isWatched);
+          Card.updateFilmsControlButtons();
+          renderUserRank(allCardsData);
 
           if (!Card.states.isWatched) {
             getFilterByName(filmsStatesToFilterMapper[`isWatched`]).decrementFilmsCount();
@@ -115,7 +139,7 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
           defaultCardData = updatedCardData;
           Card.updateData(defaultCardData);
           Popup.updateData(defaultCardData);
-          Card.addActiveClassForAddToWatchlist(Card.states.isInWatchList);
+          Card.updateFilmsControlButtons();
 
           if (!Card.states.isInWatchList) {
             getFilterByName(filmsStatesToFilterMapper[`isInWatchList`]).decrementFilmsCount();
@@ -137,13 +161,34 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
     Popup.setState(`isWatched`, !Popup.states.isWatched);
     Popup.updateFilmsControlButtons();
     Card.setState(`isWatched`, Popup.states.isWatched);
-    Card.addActiveClassForMarkAsWatched(Popup.states.isWatched); // Не должно быть актуально для экстра-карточек!
+    Card.updateFilmsControlButtons(); // Не должно быть актуально для экстра-карточек!
+    ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
+      .then((updatedCardData) => {
+        defaultCardData = updatedCardData;
+        renderUserRank(allCardsData.filter((cardData) => cardData.states.isWatched).length);
+      })
+      .catch((error) => {
+        console.error(`Can't update movie: ${error}`);
+        Card.setState(`isWatched`, !Popup.states.isWatched);
+        Popup.shake();
+        Popup.updateData(defaultCardData);
+      });
   };
   Popup.onAddToWatchList = () => {
     Popup.setState(`isInWatchList`, !Popup.states.isInWatchList);
     Popup.updateFilmsControlButtons();
     Card.setState(`isInWatchList`, Popup.states.isInWatchList);
-    Card.addActiveClassForAddToWatchlist(Popup.states.isInWatchList); // Не должно быть актуально для экстра-карточек!
+    Card.updateFilmsControlButtons(); // Не должно быть актуально для экстра-карточек!
+    ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
+      .then((updatedCardData) => {
+        defaultCardData = updatedCardData;
+      })
+      .catch((error) => {
+        console.error(`Can't update movie: ${error}`);
+        Card.setState(`isWatched`, !Popup.states.isWatched);
+        Popup.shake();
+        Popup.updateData(defaultCardData);
+      });
   };
 
   return Card.render();
@@ -152,8 +197,8 @@ const getFilmCardDomElements = (defaultCardData, FilmClass) => {
 const getFilmsCardsDomElements = (cardsData, FilmClass) => {
   const fragment = document.createDocumentFragment();
 
-  cardsData.forEach((cardData) => {
-    fragment.appendChild(getFilmCardDomElements(cardData, FilmClass));
+  cardsData.forEach((currentCardData, index, array) => {
+    fragment.appendChild(getFilmCardDomElements(array, currentCardData, FilmClass));
   });
 
   return fragment;
