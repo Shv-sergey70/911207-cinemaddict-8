@@ -13,7 +13,23 @@ const FilmContainerBlock = {
 
 const filmsStatesToFilterMapper = {
   'isWatched': `History`,
-  'isInWatchList': `Watchlist`
+  'isInWatchList': `Watchlist`,
+  'isFavorite': `Favorites`
+};
+
+const Ranks = {
+  movieBuff: {
+    filmsToWatch: 21,
+    rank: `Movie buff`
+  },
+  fan: {
+    filmsToWatch: 11,
+    rank: `Fan`
+  },
+  novice: {
+    filmsToWatch: 1,
+    rank: `Novice`
+  },
 };
 
 export const renderUserRank = (allCardsData) => {
@@ -22,16 +38,16 @@ export const renderUserRank = (allCardsData) => {
   let ratingStatus = ``;
 
   switch (true) {
-    case watchedFilmsCount >= 21:
-      ratingStatus = `Movie buff`;
+    case watchedFilmsCount >= Ranks.movieBuff.filmsToWatch:
+      ratingStatus = Ranks.movieBuff.rank;
 
       break;
-    case watchedFilmsCount >= 11:
-      ratingStatus = `Fan`;
+    case watchedFilmsCount >= Ranks.fan.filmsToWatch:
+      ratingStatus = Ranks.fan.rank;
 
       break;
-    case watchedFilmsCount >= 1:
-      ratingStatus = `Novice`;
+    case watchedFilmsCount >= Ranks.novice.filmsToWatch:
+      ratingStatus = Ranks.novice.rank;
 
       break;
   }
@@ -43,9 +59,6 @@ const getFilmCardDomElements = (allCardsData, defaultCardData, FilmClass) => {
   const Card = new FilmClass(defaultCardData);
   const Popup = new FilmCardPopup(defaultCardData);
 
-  Popup.setOnCloseButtonClickFunc = () => {
-    Popup.remove();
-  };
   Popup.setOnUndoButtonClickFunc = (newComments) => {
     newComments.pop();
     const oldComments = defaultCardData.comments;
@@ -155,6 +168,29 @@ const getFilmCardDomElements = (allCardsData, defaultCardData, FilmClass) => {
           defaultCardData.states.isInWatchList = !defaultCardData.states.isInWatchList;
         });
     };
+    Card.setOnAddToFavoriteFunc = () => {
+      defaultCardData.states.isFavorite = !defaultCardData.states.isFavorite;
+      ProviderComponent.updateMovie({id: Card.id, data: defaultCardData.toRaw()})
+        .then((updatedCardData) => {
+          defaultCardData = updatedCardData;
+          Card.updateData(defaultCardData);
+          Popup.updateData(defaultCardData);
+          Card.updateFilmsControlButtons();
+
+          if (!Card.states.isFavorite) {
+            getFilterByName(filmsStatesToFilterMapper[`isFavorite`]).decrementFilmsCount();
+            if (getActiveFilterName() === `Favorites`) {
+              Card.remove();
+            }
+          } else {
+            getFilterByName(filmsStatesToFilterMapper[`isFavorite`]).incrementFilmsCount();
+          }
+        })
+        .catch((error) => {
+          console.error(`Can't update movie: ${error}`);
+          defaultCardData.states.isFavorite = !defaultCardData.states.isFavorite;
+        });
+    };
   }
 
   Popup.onMarkAsWatched = () => {
@@ -175,6 +211,22 @@ const getFilmCardDomElements = (allCardsData, defaultCardData, FilmClass) => {
       });
   };
   Popup.onAddToWatchList = () => {
+    Popup.setState(`isInWatchList`, !Popup.states.isInWatchList);
+    Popup.updateFilmsControlButtons();
+    Card.setState(`isInWatchList`, Popup.states.isInWatchList);
+    Card.updateFilmsControlButtons(); // Не должно быть актуально для экстра-карточек!
+    ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
+      .then((updatedCardData) => {
+        defaultCardData = updatedCardData;
+      })
+      .catch((error) => {
+        console.error(`Can't update movie: ${error}`);
+        Card.setState(`isWatched`, !Popup.states.isWatched);
+        Popup.shake();
+        Popup.updateData(defaultCardData);
+      });
+  };
+  Popup.setOnAddToFavoriteFunc = () => {
     Popup.setState(`isInWatchList`, !Popup.states.isInWatchList);
     Popup.updateFilmsControlButtons();
     Card.setState(`isInWatchList`, Popup.states.isInWatchList);

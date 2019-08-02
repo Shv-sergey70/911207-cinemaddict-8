@@ -1,6 +1,12 @@
 import FilmCardAbstract from "./film-card-abstract";
 import moment from "moment";
 
+const filmsStatesToButtonClassesMapper = {
+  'isWatched': `mark-as-watched`,
+  'isInWatchList': `add-to-watchlist`,
+  'isFavorite': `favorite`
+};
+
 export default class FilmCardMain extends FilmCardAbstract {
   constructor(data) {
     super(data);
@@ -29,16 +35,12 @@ export default class FilmCardMain extends FilmCardAbstract {
   }
 
   updateFilmsControlButtons() {
-    if (this.states.isInWatchList) {
-      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.add(`film-card__controls-item--active`);
-    } else {
-      this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.remove(`film-card__controls-item--active`);
-    }
-
-    if (this.states.isWatched) {
-      this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.add(`film-card__controls-item--active`);
-    } else {
-      this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.remove(`film-card__controls-item--active`);
+    for (let key in filmsStatesToButtonClassesMapper) {
+      if (this.states[key]) {
+        this._element.querySelector(`.film-card__controls-item--${filmsStatesToButtonClassesMapper[key]}`).classList.add(`film-card__controls-item--active`);
+      } else {
+        this._element.querySelector(`.film-card__controls-item--${filmsStatesToButtonClassesMapper[key]}`).classList.remove(`film-card__controls-item--active`);
+      }
     }
   }
 
@@ -46,11 +48,13 @@ export default class FilmCardMain extends FilmCardAbstract {
     super._bindListeners();
     this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, this._onAddToWatchListButtonClickBinded);
     this._element.querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+    this._element.querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, this._onAddToFavoriteButtonClick);
   }
 
   _unbindListeners() {
     super._unbindListeners();
     this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).removeEventListener(`click`, this._onAddToWatchListButtonClickBinded);
     this._element.querySelector(`.film-card__controls-item--mark-as-watched`).removeEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+    this._element.querySelector(`.film-card__controls-item--favorite`).removeEventListener(`click`, this._onAddToFavoriteButtonClick);
   }
 }

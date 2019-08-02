@@ -43,10 +43,6 @@ export default class FilmCardPopup extends FilmAbstract {
     this._onUndoButtonClickBinded = this._onUndoButtonClick.bind(this);
   }
 
-  set setOnCloseButtonClickFunc(func) {
-    this._onCloseButtonClickFunc = func;
-  }
-
   set setOnCommentSubmitCallbackFunc(func) {
     this._onCommentSubmitCallbackFunc = func;
   }
@@ -232,7 +228,7 @@ export default class FilmCardPopup extends FilmAbstract {
   }
 
   _onCloseButtonClick() {
-    return isFunction(this._onCloseButtonClickFunc) && this._onCloseButtonClickFunc();
+    this._element.remove();
   }
 
   _onUndoButtonClick() {
@@ -382,8 +378,9 @@ export default class FilmCardPopup extends FilmAbstract {
     this._element.querySelector(`.film-details__close-btn`).addEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).addEventListener(`keydown`, this._onCommentKeydownBinded);
     this._element.querySelector(`.film-details__user-rating-score`).addEventListener(`click`, this._onRatingInputClickBinded);
-    this._element.querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._onAddToWatchListButtonClickBinded);
-    this._element.querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+    this._element.querySelector(`#watchlist`).addEventListener(`click`, this._onAddToWatchListButtonClickBinded);
+    this._element.querySelector(`#watched`).addEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+    this._element.querySelector(`#favorite`).addEventListener(`click`, this._onAddToFavoriteButtonClick);
   }
 
   _unbindListeners() {
@@ -391,7 +388,8 @@ export default class FilmCardPopup extends FilmAbstract {
     this._element.querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._onCloseButtonClickBinded);
     this._element.querySelector(`textarea[name="comment"]`).removeEventListener(`keydown`, this._onCommentKeydownBinded);
     this._element.querySelector(`.film-details__user-rating-score`).removeEventListener(`click`, this._onRatingInputClickBinded);
-    this._element.querySelector(`.film-details__control-label--watchlist`).removeEventListener(`click`, this._onAddToWatchListButtonClickBinded);
-    this._element.querySelector(`.film-details__control-label--watched`).removeEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+    this._element.querySelector(`#watchlist`).removeEventListener(`click`, this._onAddToWatchListButtonClickBinded);
+    this._element.querySelector(`#watched`).removeEventListener(`click`, this._onMarkAsWatchedButtonClickBinded);
+    this._element.querySelector(`#favorite`).removeEventListener(`click`, this._onAddToFavoriteButtonClick);
   }
 }

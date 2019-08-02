@@ -32,6 +32,7 @@ export default class FilmAbstract extends Component {
 
     this._onAddToWatchListButtonClickBinded = this._onAddToWatchListButtonClick.bind(this);
     this._onMarkAsWatchedButtonClickBinded = this._onMarkAsWatchedButtonClick.bind(this);
+    this._onAddToFavoriteButtonClick = this._onAddToFavoriteButtonClick.bind(this);
   }
 
   get id() {
@@ -58,6 +59,10 @@ export default class FilmAbstract extends Component {
     this._onMarkAsWatched = func;
   }
 
+  set setOnAddToFavoriteFunc(func) {
+    this._onAddToFavoriteFunc = func;
+  }
+
   _onAddToWatchListButtonClick(evt) {
     evt.preventDefault();
 
@@ -67,6 +72,12 @@ export default class FilmAbstract extends Component {
     evt.preventDefault();
 
     return isFunction(this._onMarkAsWatched) && this._onMarkAsWatched();
+  }
+
+  _onAddToFavoriteButtonClick(evt) {
+    evt.preventDefault();
+
+    return isFunction(this._onAddToFavoriteFunc) && this._onAddToFavoriteFunc();
   }
 
   _bindListeners() {
