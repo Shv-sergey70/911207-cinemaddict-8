@@ -14,7 +14,7 @@ export default class FilmCardExtra extends FilmCardAbstract {
           <p class="film-card__info">
             <span class="film-card__year">${moment(this._releaseDate).format(`YYYY`)}</span>
             <span class="film-card__duration">${this._getFormattedDuration()}</span>
-            <span class="film-card__genre">${this._genres[0]}</span>
+            <span class="film-card__genre">${this._genres[0] || `-`}</span>
           </p>
           <img src="${this._poster}" alt="" class="film-card__poster">
           <button class="film-card__comments">${this._commentsCount} comments</button>

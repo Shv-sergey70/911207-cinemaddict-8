@@ -34,7 +34,9 @@ export default class Component {
 
   _rerender() {
     this._unbindListeners();
-    this._element.replaceWith(createDomElement(this._template));
+    const newElement = createDomElement(this._template);
+    this._element.replaceWith(newElement);
+    this._element = newElement;
     this._bindListeners();
   }
 }

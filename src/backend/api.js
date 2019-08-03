@@ -14,7 +14,7 @@ const toJSON = (response) => response.json();
 export default class API {
   constructor() {
     this._endPoint = `https://es8-demo-srv.appspot.com/moowle`;
-    this._authorization = `Basic eo0w590ik29816a`;
+    this._authorization = `Basic eo0w590ik29816h`;
   }
 
   /**

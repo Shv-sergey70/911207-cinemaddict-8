@@ -119,8 +119,7 @@ export default class FilmCardPopup extends FilmAbstract {
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              ${this._genres.map((genre) => `
-              <span class="film-details__genre">${genre}</span>`.trim()).join(``)}
+              ${this._genres.map((genre) => `<span class="film-details__genre">${genre}</span>`.trim()).join(``) || `-`}
             </td>
           </tr>
         </table>

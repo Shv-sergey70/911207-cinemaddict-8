@@ -33,8 +33,13 @@ const Ranks = {
 };
 
 export const renderUserRank = (allCardsData) => {
-  const watchedFilmsCount = allCardsData.filter((cardData) => cardData.states.isWatched).length
   const profileRatingBlock = document.querySelector(`.profile__rating`);
+
+  profileRatingBlock.textContent = getUserRank(allCardsData);
+};
+
+export const getUserRank = (allCardsData) => {
+  const watchedFilmsCount = allCardsData.filter((cardData) => cardData.states.isWatched).length;
   let ratingStatus = ``;
 
   switch (true) {
@@ -52,7 +57,7 @@ export const renderUserRank = (allCardsData) => {
       break;
   }
 
-  profileRatingBlock.textContent = ratingStatus;
+  return ratingStatus;
 };
 
 const getFilmCardDomElements = (allCardsData, defaultCardData, FilmClass) => {
@@ -201,7 +206,7 @@ const getFilmCardDomElements = (allCardsData, defaultCardData, FilmClass) => {
     ProviderComponent.updateMovie({id: Popup.id, data: defaultCardData.toRaw()})
       .then((updatedCardData) => {
         defaultCardData = updatedCardData;
-        renderUserRank(allCardsData.filter((cardData) => cardData.states.isWatched).length);
+        renderUserRank(allCardsData);
       })
       .catch((error) => {
         console.error(`Can't update movie: ${error}`);

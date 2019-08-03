@@ -1,7 +1,9 @@
 import Component from "./component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import moment from "moment";
 import {isFunction} from "./utility";
+import {getUserRank} from "./render-films";
 
 export default class Statistic extends Component {
   constructor(cardsData) {
@@ -17,6 +19,7 @@ export default class Statistic extends Component {
     this._chart = null;
 
     this.onStatisticButtonClickBinded = this._onStatisticButtonClick.bind(this);
+    this._changeDatePeriod = this._changeDatePeriod.bind(this);
 
     this._update();
   }
@@ -66,8 +69,34 @@ export default class Statistic extends Component {
     return genresSet;
   }
 
-  _update() {
-    this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched);
+  _update(timePeriod = `all-time`) {
+    switch (true) {
+      case timePeriod === `all-time`: {
+        this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched);
+
+        break;
+      }
+      case timePeriod === `today`: {
+        this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched && cardData.watchingTimestamp >= moment(0, `HH`));
+
+        break;
+      }
+      case timePeriod === `week`: {
+        this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched && cardData.watchingTimestamp >= moment(0, `HH`).subtract(7, `d`));
+
+        break;
+      }
+      case timePeriod === `month`: {
+        this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched && cardData.watchingTimestamp >= moment(0, `HH`).subtract(1, `M`));
+
+        break;
+      }
+      case timePeriod === `year`: {
+        this._watchedFilmsCardsData = this._cardsData.filter((cardData) => cardData.states.isWatched && cardData.watchingTimestamp >= moment(0, `HH`).subtract(1, `Y`));
+
+        break;
+      }
+    }
     this._actualGenres = this._getActualGenres();
     this._filmsCountByGenre = this._countFilmsByGenre();
     this._topGenre = this._filmsCountByGenre.length !== 0 ? this._filmsCountByGenre[0].name : `none`;
@@ -77,9 +106,9 @@ export default class Statistic extends Component {
   get _template() {
     return `
    <section class="statistic">
-    <p class="statistic__rank">Your rank <span class="statistic__rank-label">Sci-Fighter</span></p>
+    <p class="statistic__rank">Your rank <span class="statistic__rank-label">${getUserRank(this._cardsData)}</span></p>
 
-    <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters visually-hidden">
+    <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
 
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
@@ -120,9 +149,32 @@ export default class Statistic extends Component {
   </section>`.trim();
   }
 
-  render() {
-    this._update();
+  _changeDatePeriod(evt) {
+    if (evt.target.tagName.toLowerCase() === `input`) {
+      this._update(evt.target.value);
+      super._rerender();
+      this._element.querySelector(`#${evt.target.id}`).checked = true;
+      this._renderChart();
+    }
+  }
+
+  _bindListeners() {
+    this._element.querySelector(`.statistic__filters`).addEventListener(`click`, this._changeDatePeriod);
+  }
+
+  _unbindListeners() {
+    this._element.querySelector(`.statistic__filters`).removeEventListener(`click`, this._changeDatePeriod);
+  }
+
+  render(timePeriod = `all-time`) {
+    this._update(timePeriod);
     super.render();
+    this._renderChart();
+
+    return this._element;
+  }
+
+  _renderChart() {
     const statisticCtx = this._element.querySelector(`.statistic__chart`);
     const BAR_HEIGHT = 50;
     statisticCtx.height = BAR_HEIGHT * 5;
@@ -183,7 +235,5 @@ export default class Statistic extends Component {
         }
       }
     });
-
-    return this._element;
   }
 }
